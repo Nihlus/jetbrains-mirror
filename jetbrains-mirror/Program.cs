@@ -18,6 +18,16 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Humanizer;
+using Humanizer.Bytes;
+using JetBrains.Mirror.API;
+using JetBrains.Mirror.Helpers;
+using JetBrains.Mirror.XML;
 
 namespace JetBrains.Mirror
 {
@@ -26,9 +36,148 @@ namespace JetBrains.Mirror
     /// </summary>
     internal static class Program
     {
-        private static void Main(string[] args)
+        private const string JetbrainsBaseUrl = "plugins.jetbrains.com";
+
+        private static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var api = new JetbrainsPlugins();
+            async Task<(bool, IdeaPlugin)> DownloadAsync(string targetDirectory, IdeaPlugin plugin)
+            {
+                var data = await api.DownloadAsync(plugin);
+
+                if (!data.IsSuccessStatusCode)
+                {
+                    return (false, plugin);
+                }
+
+                var filename = data.Content.Headers?.ContentDisposition?.FileName;
+                if (filename is null)
+                {
+                    filename = $"{plugin.Name}.zip";
+                }
+
+                var savePath = Path.Combine(targetDirectory, filename.Replace("\"", string.Empty));
+                if (File.Exists(savePath))
+                {
+                    if ((ulong)new FileInfo(savePath).Length == plugin.Size)
+                    {
+                        // Looks like we already have this one
+                        return (true, plugin);
+                    }
+                }
+
+                await File.WriteAllBytesAsync(savePath, await data.Content.ReadAsByteArrayAsync());
+                return (true, plugin);
+            }
+
+            var targetBuilds = new[]
+            {
+                "RD-191.7141.355"
+            };
+
+            foreach (var targetBuild in targetBuilds)
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                Console.WriteLine($"Fetching latest plugin versions for {targetBuild}...");
+
+                var riderPlugins = await api.ListPluginsAsync(targetBuilds[0]);
+                var totalSize = new ByteSize(riderPlugins.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b));
+
+                Console.WriteLine
+                (
+                    $"Done. Estimated total download size: " +
+                    $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n" +
+                    $"\n" +
+                    $"Creating directory structure..."
+                );
+
+                var baseDirectory = Path.Combine("plugins", targetBuild);
+                Directory.CreateDirectory(baseDirectory);
+
+                foreach (var category in riderPlugins.Categories)
+                {
+                    Directory.CreateDirectory(Path.Combine(baseDirectory, category.Name.GenerateSlug()));
+                }
+
+                Console.WriteLine("Done. Spinning up downloads...");
+
+                var downloadTasks = new Queue<Task<(bool success, IdeaPlugin plugin)>>();
+                foreach (var category in riderPlugins.Categories)
+                {
+                    Console.WriteLine($"Spun up {category.Plugins.Count} downloads from \"{category.Name}\"...");
+                    var targetDirectory = Path.Combine(baseDirectory, category.Name.GenerateSlug());
+
+                    foreach (var downloadTask in category.Plugins.Select(p => DownloadAsync(targetDirectory, p)))
+                    {
+                        //downloadTasks.Enqueue(downloadTask);
+
+                        try
+                        {
+                            var (success, plugin) = await downloadTask;
+                            //++finishedDownloadCount;
+
+                            if (!success)
+                            {
+                                Console.WriteLine($"Failed to download {plugin.Name}.");
+                                continue;
+                            }
+
+                            var pluginSize = new ByteSize(plugin.Size);
+                            Console.WriteLine
+                            (
+                                $"Finished downloading {plugin.Name} " +
+                                $"(~{pluginSize.LargestWholeNumberValue:F1} {pluginSize.LargestWholeNumberSymbol})"// +
+                                //$" - {finishedDownloadCount} of {totalDownloads}"
+                            );
+                        }
+                        catch (TaskCanceledException tex)
+                        {
+                            Console.WriteLine("Download cancelled for whatever reason.");
+                        }
+                    }
+                }
+
+                return;
+
+                ulong finishedDownloadCount = 0;
+                var totalDownloads = downloadTasks.LongCount();
+
+                while (downloadTasks.Count > 0)
+                {
+                    if (!downloadTasks.TryDequeue(out var downloadTask))
+                    {
+                        continue;
+                    }
+
+                    if (!downloadTask.IsCompleted)
+                    {
+                        // Requeue the task
+                        downloadTasks.Enqueue(downloadTask);
+                        continue;
+                    }
+
+                    var (success, plugin) = await downloadTask;
+                    ++finishedDownloadCount;
+
+                    if (!success)
+                    {
+                        Console.WriteLine($"Failed to download {plugin.Name}.");
+                        continue;
+                    }
+
+                    var pluginSize = new ByteSize(plugin.Size);
+                    Console.WriteLine
+                    (
+                        $"Finished downloading {plugin.Name} " +
+                        $"(~{pluginSize.LargestWholeNumberValue:F1} {pluginSize.LargestWholeNumberSymbol})" +
+                        $" - {finishedDownloadCount} of {totalDownloads}"
+                    );
+                }
+
+                Console.WriteLine("Finished downloading ");
+            }
         }
     }
 }
