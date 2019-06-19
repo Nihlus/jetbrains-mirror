@@ -469,3 +469,6 @@ coverage-*.acv
 
 ### External Annotations
 **/*.ExternalAnnotations.xml
+
+### Download artifacts
+plugins/
