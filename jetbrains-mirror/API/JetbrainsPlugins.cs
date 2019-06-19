@@ -42,7 +42,7 @@ namespace JetBrains.Mirror.API
 
         static JetbrainsPlugins()
         {
-            HttpClient = new HttpClient
+            HttpClient = new HttpClient(new SocketsHttpHandler())
             {
                 Timeout = TimeSpan.FromSeconds(20)
             };
