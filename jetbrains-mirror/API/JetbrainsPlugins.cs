@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Serialization;
@@ -42,10 +43,7 @@ namespace JetBrains.Mirror.API
 
         static JetbrainsPlugins()
         {
-            HttpClient = new HttpClient(new SocketsHttpHandler())
-            {
-                Timeout = TimeSpan.FromSeconds(20)
-            };
+            HttpClient = new HttpClient(new SocketsHttpHandler());
 
             RepositorySerializer = new XmlSerializer(typeof(PluginRepository));
         }
@@ -63,8 +61,9 @@ namespace JetBrains.Mirror.API
         /// Lists the plugins available for the given product of the specified version.
         /// </summary>
         /// <param name="productBuild">The product to list the plugins for.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>The repository object representing the plugins available for the given product.</returns>
-        public async Task<PluginRepository> ListPluginsAsync(string productBuild)
+        public async Task<PluginRepository> ListPluginsAsync(string productBuild, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginList.Parameters.Build] = productBuild;
@@ -75,9 +74,12 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            using (var stream = await HttpClient.GetStreamAsync(uriBuilder.Uri))
+            using (var response = await HttpClient.GetAsync(uriBuilder.Uri, ct))
             {
-                return (PluginRepository)RepositorySerializer.Deserialize(stream);
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    return (PluginRepository)RepositorySerializer.Deserialize(stream);
+                }
             }
         }
 
@@ -85,8 +87,9 @@ namespace JetBrains.Mirror.API
         /// Lists all versions available for the given plugin.
         /// </summary>
         /// <param name="pluginId">The ID of the plugin to list the versions for.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>A list of plugin versions.</returns>
-        public async Task<IReadOnlyList<IdeaPlugin>> ListVersionsAsync(string pluginId)
+        public async Task<IReadOnlyList<IdeaPlugin>> ListVersionsAsync(string pluginId, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginList.Parameters.PluginID] = pluginId;
@@ -97,10 +100,13 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            using (var stream = await HttpClient.GetStreamAsync(uriBuilder.Uri))
+            using (var response = await HttpClient.GetAsync(uriBuilder.Uri, ct))
             {
-                var repository = (PluginRepository)RepositorySerializer.Deserialize(stream);
-                return repository.Categories.SelectMany(c => c.Plugins).ToList();
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var repository = (PluginRepository)RepositorySerializer.Deserialize(stream);
+                    return repository.Categories.SelectMany(c => c.Plugins).ToList();
+                }
             }
         }
 
@@ -108,20 +114,21 @@ namespace JetBrains.Mirror.API
         /// Downloads the given plugin.
         /// </summary>
         /// <param name="plugin">The plugin.</param>
+        /// <param name="ct">The cancellation token to use.</param>
         /// <returns>The response from the server.</returns>
-        public async Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin)
+        public async Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginDownload.Parameters.PluginID] = plugin.ID;
             query[Endpoints.PluginDownload.Parameters.Version] = plugin.Version;
 
-            var uriBuilder = new UriBuilder("https", _baseURL)
+            var uriBuilder = new UriBuilder("http", _baseURL)
             {
                 Path = Endpoints.PluginDownload.BasePath,
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead);
+            return await HttpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
         }
 
         /// <summary>
@@ -129,8 +136,9 @@ namespace JetBrains.Mirror.API
         /// </summary>
         /// <param name="pluginId">The ID of the plugin.</param>
         /// <param name="productBuild">The product build to get the latest version for.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>The response from the server.</returns>
-        public async Task<HttpResponseMessage> DownloadLatestAsync(string pluginId, string productBuild)
+        public async Task<HttpResponseMessage> DownloadLatestAsync(string pluginId, string productBuild, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginManager.Parameters.Action] = "download";
@@ -143,7 +151,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri);
+            return await HttpClient.GetAsync(uriBuilder.Uri, ct);
         }
 
         /// <summary>
@@ -151,8 +159,9 @@ namespace JetBrains.Mirror.API
         /// </summary>
         /// <param name="pluginId">The ID of the plugin.</param>
         /// <param name="version">The specific version to download.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>The response from the server.</returns>
-        public async Task<HttpResponseMessage> DownloadSpecificAsync(string pluginId, string version)
+        public async Task<HttpResponseMessage> DownloadSpecificAsync(string pluginId, string version, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginDownload.Parameters.PluginID] = pluginId;
@@ -164,7 +173,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri);
+            return await HttpClient.GetAsync(uriBuilder.Uri, ct);
         }
     }
 }
