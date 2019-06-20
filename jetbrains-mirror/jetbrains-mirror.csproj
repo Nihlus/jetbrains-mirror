@@ -34,10 +34,6 @@
         </AdditionalFiles>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="plugins" />
-    </ItemGroup>
-
     <Import Project="..\props\common.props" />
     <Import Project="$(SolutionRoot)\props\nuget-common.props" />
     <Import Project="$(SolutionRoot)\props\stylecop.props" />

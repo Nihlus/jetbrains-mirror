@@ -18,16 +18,12 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Humanizer;
 using Humanizer.Bytes;
 using JetBrains.Mirror.API;
-using JetBrains.Mirror.Helpers;
 
 namespace JetBrains.Mirror
 {
@@ -62,18 +58,8 @@ namespace JetBrains.Mirror
                         await Console.Out.WriteLineAsync
                         (
                             $"Done. Estimated total download size: " +
-                            $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n" +
-                            $"\n" +
-                            $"Creating directory structure..."
+                            $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
                         );
-
-                        var baseDirectory = Path.Combine("plugins", targetBuild);
-                        Directory.CreateDirectory(baseDirectory);
-
-                        foreach (var category in repository.Categories)
-                        {
-                            Directory.CreateDirectory(Path.Combine(baseDirectory, category.Name.GenerateSlug()));
-                        }
 
                         await Console.Out.WriteLineAsync("Done. Starting mirroring...");
                         await mirrorer.MirrorRepositoryAsync(repository, cancellationSource.Token);

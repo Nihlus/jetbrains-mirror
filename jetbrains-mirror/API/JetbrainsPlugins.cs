@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -43,6 +42,7 @@ namespace JetBrains.Mirror.API
 
         static JetbrainsPlugins()
         {
+            ServicePointManager.DefaultConnectionLimit = int.MaxValue;
             HttpClient = new HttpClient(new SocketsHttpHandler());
 
             RepositorySerializer = new XmlSerializer(typeof(PluginRepository));

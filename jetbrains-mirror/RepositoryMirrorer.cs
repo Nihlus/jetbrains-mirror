@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Humanizer.Bytes;
@@ -64,6 +63,14 @@ namespace JetBrains.Mirror
         public async Task MirrorRepositoryAsync(PluginRepository repository, CancellationToken ct)
         {
             const string baseDirectory = "plugins";
+
+            await Console.Out.WriteLineAsync("Creating directory tree...");
+            Directory.CreateDirectory(baseDirectory);
+
+            foreach (var category in repository.Categories)
+            {
+                Directory.CreateDirectory(Path.Combine(baseDirectory, category.Name.GenerateSlug()));
+            }
 
             foreach (var category in repository.Categories)
             {
@@ -156,12 +163,15 @@ namespace JetBrains.Mirror
                 {
                     if (!_downloadQueue.TryDequeue(out var downloadTask))
                     {
+                        await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
                         continue;
                     }
 
                     if (!downloadTask.IsCompleted)
                     {
                         _downloadQueue.Enqueue(downloadTask);
+
+                        await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
                         continue;
                     }
 
@@ -223,6 +233,8 @@ namespace JetBrains.Mirror
                         }
                     }
                 }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
             }
         }
 
