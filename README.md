@@ -9,11 +9,9 @@ It's currently in a prototype stage, and isn't very finished.
 
 ## Basic Usage
 ```bash
-dotnet jetbrains-mirror.dll
+dotnet jetbrains-mirror.dll --versions RD-191.7141.355 CL-191.7479.33
 ```
 
-No options are currently available. The application will only mirror the latest plugins for Rider. No metadata files 
-will be created.
-
+Various options are available to configure which versions to mirror. See `--help` for detailed information.
 
 <sub>Background created using https://www.jetbrains.com/goodies/code2art/</sub>
