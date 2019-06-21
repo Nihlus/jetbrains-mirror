@@ -18,7 +18,7 @@
 //
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,15 +53,7 @@ namespace JetBrains.Mirror
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task MirrorRepositoryAsync(PluginRepository repository, CancellationToken ct)
         {
-            var loopCanceller = new CancellationTokenSource();
-            var downloadQueue = new ConcurrentQueue<Task<DownloadResult>>();
-            var downloadLoop = Task.Factory.StartNew
-            (
-                async () => await DownloadLoopAsync(downloadQueue, loopCanceller.Token),
-                ct,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Current
-            );
+            var finalizedDownloads = new List<Task>();
 
             const string baseDirectory = "plugins";
 
@@ -84,18 +76,12 @@ namespace JetBrains.Mirror
 
                 foreach (var plugin in category.Plugins)
                 {
-                    var downloadTask = DownloadPluginAsync(targetDirectory, plugin, ct);
-                    downloadQueue.Enqueue(downloadTask);
+                    var downloadTask = FinalizeDownload(DownloadPluginAsync(targetDirectory, plugin, ct));
+                    finalizedDownloads.Add(downloadTask);
                 }
             }
 
-            while (!downloadQueue.IsEmpty)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1), ct);
-            }
-
-            loopCanceller.Cancel();
-            await downloadLoop;
+            await Task.WhenAll(finalizedDownloads);
         }
 
         /// <summary>
@@ -160,98 +146,65 @@ namespace JetBrains.Mirror
             }
         }
 
-        /// <summary>
-        /// Continually runs until the mirrorer is disposed, consuming running download tasks.
-        /// </summary>
-        /// <param name="downloadQueue">The download queue.</param>
-        /// <param name="ct">The cancellation token in use.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task DownloadLoopAsync(ConcurrentQueue<Task<DownloadResult>> downloadQueue, CancellationToken ct)
+        private static async Task FinalizeDownload(Task<DownloadResult> downloadTask)
         {
-            if (ct.IsCancellationRequested)
+            var result = await downloadTask;
+            var plugin = result.Plugin;
+
+            var pluginName = "Unknown";
+            if (!(plugin is null))
             {
+                pluginName = plugin.Name;
+            }
+
+            if (!result.IsSuccess)
+            {
+                await Console.Error.WriteLineAsync
+                (
+                    $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName}. {result.ErrorReason}"
+                );
+
                 return;
             }
 
-            while (!ct.IsCancellationRequested)
+            switch (result.Action)
             {
-                while (!downloadQueue.IsEmpty)
+                case DownloadAction.Downloaded:
                 {
-                    if (!downloadQueue.TryDequeue(out var downloadTask))
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
-                        continue;
-                    }
-
-                    if (!downloadTask.IsCompleted)
-                    {
-                        downloadQueue.Enqueue(downloadTask);
-
-                        await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
-                        continue;
-                    }
-
-                    var result = await downloadTask;
-                    var plugin = result.Plugin;
-
-                    var pluginName = "Unknown";
+                    var printableSize = string.Empty;
                     if (!(plugin is null))
                     {
-                        pluginName = plugin.Name;
+                        var size = new ByteSize(plugin.Size);
+                        printableSize = $"{size.LargestWholeNumberValue:F1} {size.LargestWholeNumberSymbol}";
                     }
 
-                    if (!result.IsSuccess)
-                    {
-                        await Console.Error.WriteLineAsync
-                        (
-                            $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName}. {result.ErrorReason}"
-                        );
+                    await Console.Out.WriteLineAsync
+                    (
+                        $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} ({printableSize})"
+                    );
 
-                        continue;
-                    }
-
-                    switch (result.Action)
-                    {
-                        case DownloadAction.Downloaded:
-                        {
-                            var printableSize = string.Empty;
-                            if (!(plugin is null))
-                            {
-                                var size = new ByteSize(plugin.Size);
-                                printableSize = $"{size.LargestWholeNumberValue:F1} {size.LargestWholeNumberSymbol}";
-                            }
-
-                            await Console.Out.WriteLineAsync
-                            (
-                                $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} ({printableSize}, {downloadQueue.Count} downloads remaining)"
-                            );
-
-                            break;
-                        }
-
-                        case DownloadAction.Skipped:
-                        {
-                            await Console.Out.WriteLineAsync
-                            (
-                                $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download. ({downloadQueue.Count} downloads remaining)"
-                            );
-
-                            break;
-                        }
-
-                        case null:
-                        {
-                            break;
-                        }
-
-                        default:
-                        {
-                            throw new ArgumentOutOfRangeException();
-                        }
-                    }
+                    break;
                 }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
+                case DownloadAction.Skipped:
+                {
+                    await Console.Out.WriteLineAsync
+                    (
+                        $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download."
+                    );
+
+                    break;
+                }
+
+                case null:
+                {
+                    break;
+                }
+
+                default:
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
             }
         }
     }
