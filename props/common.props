@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <HasCommonProperties>true</HasCommonProperties>
-    <Copyright>Firwood Software 2017</Copyright>
+    <Copyright>Firwood Software 2019</Copyright>
     <Description>A tool for mirroring JetBrains plugin repositories..</Description>
   </PropertyGroup>
   <PropertyGroup>

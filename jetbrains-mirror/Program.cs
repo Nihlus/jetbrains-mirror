@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandLine;
 using Humanizer.Bytes;
 using JetBrains.Mirror.API;
 
@@ -32,26 +33,36 @@ namespace JetBrains.Mirror
     /// </summary>
     internal static class Program
     {
-        private static async Task Main()
-        {
-            var api = new JetbrainsPlugins();
+        /// <summary>
+        /// Gets the command-line options that were passed to the program.
+        /// </summary>
+        public static ProgramOptions Options { get; private set; }
 
-            var targetBuilds = new[]
+        private static async Task Main(string[] args)
+        {
+            var parsingResult = Parser.Default.ParseArguments<ProgramOptions>(args);
+            if (parsingResult is Parsed<ProgramOptions> success)
             {
-                "RD-191.7141.355"
-            };
+                Options = success.Value;
+            }
+            else
+            {
+                return;
+            }
+
+            var api = new JetbrainsPlugins();
 
             var mirrorer = new RepositoryMirrorer();
             using (var cancellationSource = new CancellationTokenSource())
             {
-                foreach (var targetBuild in targetBuilds)
+                foreach (var productVersion in Options.ProductVersions)
                 {
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
 
-                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {targetBuild}...");
+                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {productVersion}...");
 
-                    var repository = await api.ListPluginsAsync(targetBuilds[0], cancellationSource.Token);
+                    var repository = await api.ListPluginsAsync(productVersion, cancellationSource.Token);
                     var totalSize = new ByteSize(repository.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b));
 
                     await Console.Out.WriteLineAsync
