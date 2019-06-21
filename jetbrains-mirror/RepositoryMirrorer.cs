@@ -107,6 +107,16 @@ namespace JetBrains.Mirror
                         return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                     }
 
+                    if (data.Content?.Headers?.ContentDisposition?.FileName is null)
+                    {
+                        return DownloadResult.FromError
+                        (
+                            plugin,
+                            DownloadError.Unknown,
+                            "Failed to retrieve file information from the download headers."
+                        );
+                    }
+
                     var sluggedPluginName = plugin.Name.GenerateSlug();
                     var filename = data.Content.Headers.ContentDisposition.FileName;
                     var version = plugin.Version;
@@ -129,9 +139,24 @@ namespace JetBrains.Mirror
                             // Looks like we already have this one
                             return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
                         }
+
+                        // It's crap, so delete it and download again
+                        File.Delete(savePath);
                     }
 
-                    await File.WriteAllBytesAsync(savePath, await data.Content.ReadAsByteArrayAsync(), ct);
+                    // Download to a temporary file first
+                    var tempFile = Path.GetTempFileName();
+                    using (var tempOutput = File.Create(tempFile))
+                    {
+                        using (var contentStream = await data.Content.ReadAsStreamAsync())
+                        {
+                            await contentStream.CopyToAsync(tempOutput, ct);
+                        }
+                    }
+
+                    // And then move it over to the final save location
+                    File.Move(tempFile, savePath);
+
                     return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
                 }
             }
@@ -139,9 +164,8 @@ namespace JetBrains.Mirror
             {
                 return DownloadResult.FromError(plugin, DownloadError.Timeout, oex.Message);
             }
-            catch (IOException iex)
+            catch (Exception iex)
             {
-                await Console.Error.WriteLineAsync($"Download of {plugin.Name} failed: {iex.Message}");
                 return DownloadResult.FromError(plugin, DownloadError.Exception, iex.Message);
             }
         }
