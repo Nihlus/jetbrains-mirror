@@ -33,14 +33,9 @@ namespace JetBrains.Mirror
     /// <summary>
     /// Handles mirroring a repository.
     /// </summary>
-    public class RepositoryMirrorer : IDisposable
+    public class RepositoryMirrorer
     {
         private readonly JetbrainsPlugins _api;
-        private readonly CancellationTokenSource _downloadCanceller;
-
-        private readonly Task _downloadLoop;
-
-        private readonly ConcurrentQueue<Task<DownloadResult>> _downloadQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryMirrorer"/> class.
@@ -48,10 +43,6 @@ namespace JetBrains.Mirror
         public RepositoryMirrorer()
         {
             _api = new JetbrainsPlugins();
-            _downloadCanceller = new CancellationTokenSource();
-
-            _downloadQueue = new ConcurrentQueue<Task<DownloadResult>>();
-            _downloadLoop = Task.Factory.StartNew(() => DownloadLoopAsync(_downloadCanceller.Token));
         }
 
         /// <summary>
@@ -62,6 +53,16 @@ namespace JetBrains.Mirror
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task MirrorRepositoryAsync(PluginRepository repository, CancellationToken ct)
         {
+            var loopCanceller = new CancellationTokenSource();
+            var downloadQueue = new ConcurrentQueue<Task<DownloadResult>>();
+            var downloadLoop = Task.Factory.StartNew
+            (
+                async () => await DownloadLoopAsync(downloadQueue, loopCanceller.Token),
+                ct,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Current
+            );
+
             const string baseDirectory = "plugins";
 
             await Console.Out.WriteLineAsync("Creating directory tree...");
@@ -76,19 +77,25 @@ namespace JetBrains.Mirror
             {
                 var targetDirectory = Path.Combine(baseDirectory, category.Name.GenerateSlug());
 
+                await Console.Out.WriteLineAsync
+                (
+                    $"Spinning up {category.Plugins.Count} downloads from \"{category.Name}\"..."
+                );
+
                 foreach (var plugin in category.Plugins)
                 {
                     var downloadTask = DownloadPluginAsync(targetDirectory, plugin, ct);
-                    _downloadQueue.Enqueue(downloadTask);
+                    downloadQueue.Enqueue(downloadTask);
                 }
-
-                Console.WriteLine($"Spun up {category.Plugins.Count} downloads from \"{category.Name}\"...");
             }
 
-            while (!_downloadQueue.IsEmpty)
+            while (!downloadQueue.IsEmpty)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1), ct);
             }
+
+            loopCanceller.Cancel();
+            await downloadLoop;
         }
 
         /// <summary>
@@ -114,13 +121,21 @@ namespace JetBrains.Mirror
                         return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                     }
 
-                    var filename = data.Content.Headers?.ContentDisposition?.FileName;
-                    if (filename is null)
-                    {
-                        filename = $"{plugin.Name}.zip";
-                    }
+                    var sluggedPluginName = plugin.Name.GenerateSlug();
+                    var filename = data.Content.Headers.ContentDisposition.FileName;
+                    var version = plugin.Version;
 
-                    var savePath = Path.Combine(targetDirectory, filename.Replace("\"", string.Empty));
+                    var saveDirectory = Path.Combine
+                    (
+                        targetDirectory,
+                        sluggedPluginName,
+                        version
+                    );
+
+                    Directory.CreateDirectory(saveDirectory);
+
+                    var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
+
                     if (File.Exists(savePath))
                     {
                         if ((ulong)new FileInfo(savePath).Length == plugin.Size)
@@ -148,9 +163,10 @@ namespace JetBrains.Mirror
         /// <summary>
         /// Continually runs until the mirrorer is disposed, consuming running download tasks.
         /// </summary>
+        /// <param name="downloadQueue">The download queue.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task DownloadLoopAsync(CancellationToken ct)
+        private async Task DownloadLoopAsync(ConcurrentQueue<Task<DownloadResult>> downloadQueue, CancellationToken ct)
         {
             if (ct.IsCancellationRequested)
             {
@@ -159,9 +175,9 @@ namespace JetBrains.Mirror
 
             while (!ct.IsCancellationRequested)
             {
-                while (!_downloadQueue.IsEmpty)
+                while (!downloadQueue.IsEmpty)
                 {
-                    if (!_downloadQueue.TryDequeue(out var downloadTask))
+                    if (!downloadQueue.TryDequeue(out var downloadTask))
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
                         continue;
@@ -169,7 +185,7 @@ namespace JetBrains.Mirror
 
                     if (!downloadTask.IsCompleted)
                     {
-                        _downloadQueue.Enqueue(downloadTask);
+                        downloadQueue.Enqueue(downloadTask);
 
                         await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
                         continue;
@@ -207,7 +223,7 @@ namespace JetBrains.Mirror
 
                             await Console.Out.WriteLineAsync
                             (
-                                $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} ({printableSize})"
+                                $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} ({printableSize}, {downloadQueue.Count} downloads remaining)"
                             );
 
                             break;
@@ -217,8 +233,9 @@ namespace JetBrains.Mirror
                         {
                             await Console.Out.WriteLineAsync
                             (
-                                $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download."
+                                $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download. ({downloadQueue.Count} downloads remaining)"
                             );
+
                             break;
                         }
 
@@ -236,15 +253,6 @@ namespace JetBrains.Mirror
 
                 await Task.Delay(TimeSpan.FromMilliseconds(25), ct);
             }
-        }
-
-        /// <inheritdoc/>
-        public async void Dispose()
-        {
-            _downloadCanceller?.Dispose();
-
-            // TODO: Use async streams
-            await _downloadLoop;
         }
     }
 }

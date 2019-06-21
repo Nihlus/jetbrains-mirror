@@ -41,29 +41,27 @@ namespace JetBrains.Mirror
                 "RD-191.7141.355"
             };
 
-            using (var mirrorer = new RepositoryMirrorer())
+            var mirrorer = new RepositoryMirrorer();
+            using (var cancellationSource = new CancellationTokenSource())
             {
-                using (var cancellationSource = new CancellationTokenSource())
+                foreach (var targetBuild in targetBuilds)
                 {
-                    foreach (var targetBuild in targetBuilds)
-                    {
-                        var stopwatch = new Stopwatch();
-                        stopwatch.Start();
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
 
-                        await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {targetBuild}...");
+                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {targetBuild}...");
 
-                        var repository = await api.ListPluginsAsync(targetBuilds[0], cancellationSource.Token);
-                        var totalSize = new ByteSize(repository.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b));
+                    var repository = await api.ListPluginsAsync(targetBuilds[0], cancellationSource.Token);
+                    var totalSize = new ByteSize(repository.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b));
 
-                        await Console.Out.WriteLineAsync
-                        (
-                            $"Done. Estimated total download size: " +
-                            $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
-                        );
+                    await Console.Out.WriteLineAsync
+                    (
+                        $"Done. Estimated total download size: " +
+                        $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
+                    );
 
-                        await Console.Out.WriteLineAsync("Done. Starting mirroring...");
-                        await mirrorer.MirrorRepositoryAsync(repository, cancellationSource.Token);
-                    }
+                    await Console.Out.WriteLineAsync("Done. Starting mirroring...");
+                    await mirrorer.MirrorRepositoryAsync(repository, cancellationSource.Token);
                 }
             }
         }
