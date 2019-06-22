@@ -42,12 +42,7 @@ namespace JetBrains.Mirror.API
 
         static JetbrainsPlugins()
         {
-            ServicePointManager.DefaultConnectionLimit = int.MaxValue;
-            var httpHandler = new SocketsHttpHandler
-            {
-                AllowAutoRedirect = true
-            };
-
+            var httpHandler = new SocketsHttpHandler();
             HttpClient = new HttpClient(httpHandler);
 
             RepositorySerializer = new XmlSerializer(typeof(PluginRepository));
@@ -127,7 +122,7 @@ namespace JetBrains.Mirror.API
             query[Endpoints.PluginDownload.Parameters.PluginID] = plugin.ID;
             query[Endpoints.PluginDownload.Parameters.Version] = plugin.Version;
 
-            var uriBuilder = new UriBuilder("http", _baseURL)
+            var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.PluginDownload.BasePath,
                 Query = query.ToString()
