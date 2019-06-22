@@ -77,14 +77,30 @@ namespace JetBrains.Mirror
                 {
                     await Console.Out.WriteLineAsync
                     (
-                        $"Spinning up {category.Plugins.Count} downloads from \"{category.Name}\"..."
+                        $"Downloading {category.Plugins.Count} plugins from \"{category.Name}\"..."
                     );
                 }
 
                 foreach (var plugin in category.Plugins)
                 {
-                    var downloadTask = FinalizeDownload(DownloadPluginAsync(targetDirectory, plugin, ct));
-                    finalizedDownloads.Add(downloadTask);
+                    if (Program.Options.MirrorAllVersions)
+                    {
+                        var pluginVersions = await _api.ListVersionsAsync(plugin.ID, ct);
+                        foreach (var versionedPlugin in pluginVersions)
+                        {
+                            var downloadTask = FinalizeDownload
+                            (
+                                DownloadPluginAsync(targetDirectory, versionedPlugin, ct)
+                            );
+
+                            finalizedDownloads.Add(downloadTask);
+                        }
+                    }
+                    else
+                    {
+                        var downloadTask = FinalizeDownload(DownloadPluginAsync(targetDirectory, plugin, ct));
+                        finalizedDownloads.Add(downloadTask);
+                    }
                 }
             }
 
@@ -114,7 +130,25 @@ namespace JetBrains.Mirror
                         return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                     }
 
-                    if (data.Content?.Headers?.ContentDisposition?.FileName is null)
+                    string filename = null;
+                    if (data.Content.Headers?.ContentDisposition?.FileName is null)
+                    {
+                        // Try an alternate way
+                        var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
+                        if (!(alternatePath is null))
+                        {
+                            if (Path.HasExtension(alternatePath))
+                            {
+                                filename = Path.GetFileName(alternatePath);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        filename = data.Content.Headers.ContentDisposition.FileName;
+                    }
+
+                    if (filename is null)
                     {
                         return DownloadResult.FromError
                         (
@@ -125,7 +159,6 @@ namespace JetBrains.Mirror
                     }
 
                     var sluggedPluginName = plugin.Name.GenerateSlug();
-                    var filename = data.Content.Headers.ContentDisposition.FileName;
                     var version = plugin.Version;
 
                     var saveDirectory = Path.Combine
@@ -242,16 +275,18 @@ namespace JetBrains.Mirror
             {
                 case DownloadAction.Downloaded:
                 {
+                    var printableVersion = "0.0.0";
                     var printableSize = string.Empty;
                     if (!(plugin is null))
                     {
                         var size = new ByteSize(plugin.Size);
                         printableSize = $"{size.LargestWholeNumberValue:F1} {size.LargestWholeNumberSymbol}";
+                        printableVersion = plugin.Version;
                     }
 
                     await Console.Out.WriteLineAsync
                     (
-                        $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} ({printableSize})"
+                        $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} v{printableVersion} ({printableSize})"
                     );
 
                     break;

@@ -43,7 +43,12 @@ namespace JetBrains.Mirror.API
         static JetbrainsPlugins()
         {
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
-            HttpClient = new HttpClient(new SocketsHttpHandler());
+            var httpHandler = new SocketsHttpHandler
+            {
+                AllowAutoRedirect = true
+            };
+
+            HttpClient = new HttpClient(httpHandler);
 
             RepositorySerializer = new XmlSerializer(typeof(PluginRepository));
         }
