@@ -72,7 +72,10 @@ namespace JetBrains.Mirror
                     );
 
                     await Console.Out.WriteLineAsync("Done. Starting mirroring...");
+
                     await mirrorer.MirrorRepositoryAsync(repository, cancellationSource.Token);
+
+                    await Console.Out.WriteLineAsync($"Finished mirroring {productVersion}.");
                 }
             }
         }

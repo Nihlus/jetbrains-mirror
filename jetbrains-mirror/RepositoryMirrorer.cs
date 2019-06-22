@@ -55,9 +55,13 @@ namespace JetBrains.Mirror
         {
             var finalizedDownloads = new List<Task>();
 
-            const string baseDirectory = "plugins";
+            var baseDirectory = Path.Combine(Program.Options.OutputFolder, "plugins");
 
-            await Console.Out.WriteLineAsync("Creating directory tree...");
+            if (Program.Options.VerboseOutput)
+            {
+                await Console.Out.WriteLineAsync("Creating directory tree...");
+            }
+
             Directory.CreateDirectory(baseDirectory);
 
             foreach (var category in repository.Categories)
@@ -69,10 +73,13 @@ namespace JetBrains.Mirror
             {
                 var targetDirectory = Path.Combine(baseDirectory, category.Name.GenerateSlug());
 
-                await Console.Out.WriteLineAsync
-                (
-                    $"Spinning up {category.Plugins.Count} downloads from \"{category.Name}\"..."
-                );
+                if (Program.Options.VerboseOutput)
+                {
+                    await Console.Out.WriteLineAsync
+                    (
+                        $"Spinning up {category.Plugins.Count} downloads from \"{category.Name}\"..."
+                    );
+                }
 
                 foreach (var plugin in category.Plugins)
                 {
@@ -164,9 +171,9 @@ namespace JetBrains.Mirror
             {
                 return DownloadResult.FromError(plugin, DownloadError.Timeout, oex.Message);
             }
-            catch (Exception iex)
+            catch (Exception ex)
             {
-                return DownloadResult.FromError(plugin, DownloadError.Exception, iex.Message);
+                return DownloadResult.FromError(plugin, DownloadError.Exception, ex.Message, ex);
             }
         }
 
@@ -183,10 +190,50 @@ namespace JetBrains.Mirror
 
             if (!result.IsSuccess)
             {
-                await Console.Error.WriteLineAsync
-                (
-                    $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName}. {result.ErrorReason}"
-                );
+                switch (result.Error)
+                {
+                    case DownloadError.Exception:
+                    {
+                        await Console.Error.WriteLineAsync
+                        (
+                            $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName} due to an exception: " +
+                            $"{result.Exception?.Message ?? string.Empty}"
+                        );
+
+                        break;
+                    }
+
+                    case DownloadError.Timeout:
+                    {
+                        await Console.Error.WriteLineAsync
+                        (
+                            $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName}: The download timed out."
+                        );
+
+                        break;
+                    }
+
+                    case DownloadError.Unknown:
+                    case DownloadError.InvalidResponse:
+                    {
+                        await Console.Error.WriteLineAsync
+                        (
+                            $"[{nameof(RepositoryMirrorer)}]: Failed to download {pluginName}: {result.ErrorReason}"
+                        );
+
+                        break;
+                    }
+
+                    case null:
+                    {
+                        break;
+                    }
+
+                    default:
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
 
                 return;
             }
@@ -212,10 +259,13 @@ namespace JetBrains.Mirror
 
                 case DownloadAction.Skipped:
                 {
-                    await Console.Out.WriteLineAsync
-                    (
-                        $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download."
-                    );
+                    if (Program.Options.VerboseOutput)
+                    {
+                        await Console.Out.WriteLineAsync
+                        (
+                            $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download."
+                        );
+                    }
 
                     break;
                 }
