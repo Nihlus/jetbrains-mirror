@@ -126,6 +126,28 @@ namespace JetBrains.Mirror.XML
         [XmlAttribute(AttributeName = "updatedDate")]
         public string UpdateDate { get; set; }
 
+        /// <summary>
+        /// Gets a hash code that is unique to the ID-version combination of this plugin.
+        /// </summary>
+        /// <returns>The identity hash.</returns>
+        public int GetIdentityHash()
+        {
+            unchecked
+            {
+                return ((this.ID?.GetHashCode() ?? 0) * 397) ^ (this.Version?.GetHashCode() ?? 0);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether a given plugin represents the same logical plugin as this one.
+        /// </summary>
+        /// <param name="other">The other plugin.</param>
+        /// <returns>true if the plugins are logically equivalent; otherwise, false.</returns>
+        public bool IsSameAs(IdeaPlugin other)
+        {
+            return GetIdentityHash() == other.GetIdentityHash();
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {

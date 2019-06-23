@@ -22,6 +22,8 @@
         <PackageReference Include="CommandLineParser" Version="2.5.0" />
         <PackageReference Include="Humanizer.Core" Version="2.6.2" />
         <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
     </ItemGroup>
 
     <ItemGroup>

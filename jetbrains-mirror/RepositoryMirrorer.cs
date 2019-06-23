@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Humanizer.Bytes;
@@ -40,9 +41,10 @@ namespace JetBrains.Mirror
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryMirrorer"/> class.
         /// </summary>
-        public RepositoryMirrorer()
+        /// <param name="api">The API instance to use.</param>
+        public RepositoryMirrorer(JetbrainsPlugins api)
         {
-            _api = new JetbrainsPlugins();
+            _api = api;
         }
 
         /// <summary>
@@ -53,6 +55,17 @@ namespace JetBrains.Mirror
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task MirrorRepositoryAsync(PluginRepository repository, CancellationToken ct)
         {
+            var totalSize = new ByteSize
+            (
+                repository.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b)
+            );
+
+            await Console.Out.WriteLineAsync
+            (
+                $"Estimated total download size: " +
+                $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
+            );
+
             var finalizedDownloads = new List<Task>();
 
             var baseDirectory = Path.Combine(Program.Options.OutputFolder, "plugins");
@@ -69,6 +82,7 @@ namespace JetBrains.Mirror
                 Directory.CreateDirectory(Path.Combine(baseDirectory, category.Name.GenerateSlug()));
             }
 
+            await Console.Out.WriteLineAsync("Done. Starting mirroring...");
             foreach (var category in repository.Categories)
             {
                 var targetDirectory = Path.Combine(baseDirectory, category.Name.GenerateSlug());
@@ -105,6 +119,79 @@ namespace JetBrains.Mirror
             }
 
             await Task.WhenAll(finalizedDownloads);
+        }
+
+        /// <summary>
+        /// Mirrors the plugins compatible with the given product versions from the official repository.
+        /// </summary>
+        /// <param name="productVersions">The product versions.</param>
+        /// <param name="ct">The cancellation token in use.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task MirrorRepositoriesAsync(IEnumerable<string> productVersions, CancellationToken ct)
+        {
+            var repositories = new List<PluginRepository>();
+            foreach (var productVersion in productVersions)
+            {
+                repositories.Add(await _api.ListPluginsAsync(productVersion, ct));
+            }
+
+            await MirrorRepositoriesAsync(repositories, ct);
+        }
+
+        /// <summary>
+        /// Mirrors the given repositories, queueing their plugins up for download. This will merge the repositories
+        /// together into a single filtered repository to save bandwidth.
+        /// </summary>
+        /// <param name="repositories">The repositories to mirror.</param>
+        /// <param name="ct">The cancellation token in use.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task MirrorRepositoriesAsync(IReadOnlyCollection<PluginRepository> repositories, CancellationToken ct)
+        {
+            await Console.Out.WriteLineAsync("Merging requested versioned repositories (this might take a while)...");
+
+            var newCategories = new Dictionary<string, Dictionary<int, IdeaPlugin>>();
+
+            var totalRepositories = repositories.Count;
+            var mergedRepositories = 0;
+            foreach (var repository in repositories)
+            {
+                foreach (var category in repository.Categories)
+                {
+                    if (!newCategories.TryGetValue(category.Name, out var newCategory))
+                    {
+                        newCategory = new Dictionary<int, IdeaPlugin>();
+                        newCategories.Add(category.Name, newCategory);
+                    }
+
+                    foreach (var plugin in category.Plugins)
+                    {
+                        if (!newCategory.TryGetValue(plugin.GetIdentityHash(), out _))
+                        {
+                            newCategory.Add(plugin.GetIdentityHash(), plugin);
+                        }
+                    }
+                }
+
+                ++mergedRepositories;
+                await Console.Out.WriteLineAsync($"Merged repository {mergedRepositories} out of {totalRepositories}.");
+            }
+
+            var mergedCategories = newCategories.Select
+            (
+                kvp =>
+                    new PluginCategory
+                    {
+                        Name = kvp.Key,
+                        Plugins = kvp.Value.Values.ToList()
+                    }
+            );
+
+            var mergedRepository = new PluginRepository
+            {
+                Categories = mergedCategories.ToList()
+            };
+
+            await MirrorRepositoryAsync(mergedRepository, ct);
         }
 
         /// <summary>
@@ -223,6 +310,7 @@ namespace JetBrains.Mirror
 
             if (!result.IsSuccess)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 switch (result.Error)
                 {
                     case DownloadError.Exception:
@@ -268,6 +356,8 @@ namespace JetBrains.Mirror
                     }
                 }
 
+                Console.ResetColor();
+
                 return;
             }
 
@@ -284,6 +374,7 @@ namespace JetBrains.Mirror
                         printableVersion = plugin.Version;
                     }
 
+                    Console.ForegroundColor = ConsoleColor.Green;
                     await Console.Out.WriteLineAsync
                     (
                         $"[{nameof(RepositoryMirrorer)}]: Downloaded {pluginName} v{printableVersion} ({printableSize})"
@@ -296,6 +387,7 @@ namespace JetBrains.Mirror
                 {
                     if (Program.Options.VerboseOutput)
                     {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         await Console.Out.WriteLineAsync
                         (
                             $"[{nameof(RepositoryMirrorer)}]: {pluginName} already exists; skipped download."
@@ -315,6 +407,8 @@ namespace JetBrains.Mirror
                     throw new ArgumentOutOfRangeException();
                 }
             }
+
+            Console.ResetColor();
         }
     }
 }

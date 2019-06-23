@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,25 +34,24 @@ namespace JetBrains.Mirror.API
     /// </summary>
     public class JetbrainsPlugins
     {
-        private static readonly HttpClient HttpClient;
+        private readonly HttpClient _httpClient;
         private static readonly XmlSerializer RepositorySerializer;
 
         private readonly string _baseURL;
 
         static JetbrainsPlugins()
         {
-            var httpHandler = new SocketsHttpHandler();
-            HttpClient = new HttpClient(httpHandler);
-
             RepositorySerializer = new XmlSerializer(typeof(PluginRepository));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JetbrainsPlugins"/> class.
         /// </summary>
+        /// <param name="httpClient">The HTTP client to use.</param>
         /// <param name="baseURL">The base URL to connect to.</param>
-        public JetbrainsPlugins(string baseURL = Endpoints.BaseURL)
+        public JetbrainsPlugins(HttpClient httpClient, string baseURL = Endpoints.BaseURL)
         {
+            _httpClient = httpClient;
             _baseURL = baseURL;
         }
 
@@ -74,7 +72,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            using (var response = await HttpClient.GetAsync(uriBuilder.Uri, ct))
+            using (var response = await _httpClient.GetAsync(uriBuilder.Uri, ct))
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
@@ -100,7 +98,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            using (var response = await HttpClient.GetAsync(uriBuilder.Uri, ct))
+            using (var response = await _httpClient.GetAsync(uriBuilder.Uri, ct))
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
@@ -128,7 +126,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
+            return await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri, ct);
+            return await _httpClient.GetAsync(uriBuilder.Uri, ct);
         }
 
         /// <summary>
@@ -173,7 +171,7 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await HttpClient.GetAsync(uriBuilder.Uri, ct);
+            return await _httpClient.GetAsync(uriBuilder.Uri, ct);
         }
     }
 }

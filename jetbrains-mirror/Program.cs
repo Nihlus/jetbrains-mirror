@@ -20,11 +20,17 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
+using Humanizer;
 using Humanizer.Bytes;
 using JetBrains.Mirror.API;
+using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace JetBrains.Mirror
 {
@@ -50,33 +56,37 @@ namespace JetBrains.Mirror
                 return;
             }
 
-            var api = new JetbrainsPlugins();
+            var jitterer = new Random();
+            var retryPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .Or<TaskCanceledException>(tex => !tex.CancellationToken.IsCancellationRequested)
+                .WaitAndRetryAsync
+                (
+                    3,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) +
+                                    TimeSpan.FromMilliseconds(jitterer.Next(0, 100))
+                );
 
-            var mirrorer = new RepositoryMirrorer();
+            var services = new ServiceCollection()
+                .AddHttpClient<JetbrainsPlugins, JetbrainsPlugins>()
+                .ConfigurePrimaryHttpMessageHandler
+                (
+                    () =>
+                        new SocketsHttpHandler
+                        {
+                            AllowAutoRedirect = true
+                        }
+                )
+                .AddPolicyHandler(retryPolicy)
+                .Services
+                .AddSingleton<RepositoryMirrorer>()
+                .BuildServiceProvider();
+
+            var mirrorer = services.GetRequiredService<RepositoryMirrorer>();
             using (var cancellationSource = new CancellationTokenSource())
             {
-                foreach (var productVersion in Options.ProductVersions)
-                {
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-
-                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {productVersion}...");
-
-                    var repository = await api.ListPluginsAsync(productVersion, cancellationSource.Token);
-                    var totalSize = new ByteSize(repository.Categories.SelectMany(p => p.Plugins).Select(p => p.Size).Aggregate((a, b) => a + b));
-
-                    await Console.Out.WriteLineAsync
-                    (
-                        $"Done. Estimated total download size: " +
-                        $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
-                    );
-
-                    await Console.Out.WriteLineAsync("Done. Starting mirroring...");
-
-                    await mirrorer.MirrorRepositoryAsync(repository, cancellationSource.Token);
-
-                    await Console.Out.WriteLineAsync($"Finished mirroring {productVersion}.");
-                }
+                await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {Options.ProductVersions.Humanize()}...");
+                await mirrorer.MirrorRepositoriesAsync(Options.ProductVersions, cancellationSource.Token);
             }
         }
     }
