@@ -18,19 +18,17 @@
 //
 
 using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Humanizer;
-using Humanizer.Bytes;
 using JetBrains.Mirror.API;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
+using RateLimiter;
 
 namespace JetBrains.Mirror
 {
@@ -60,33 +58,55 @@ namespace JetBrains.Mirror
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .Or<TaskCanceledException>(tex => !tex.CancellationToken.IsCancellationRequested)
+                .Or<IOException>(iex => iex.Message.Contains("Connection reset by peer"))
                 .WaitAndRetryAsync
                 (
-                    3,
+                    6,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) +
                                     TimeSpan.FromMilliseconds(jitterer.Next(0, 100))
                 );
 
-            var services = new ServiceCollection()
+            using (var services = new ServiceCollection()
                 .AddHttpClient<JetbrainsPlugins, JetbrainsPlugins>()
                 .ConfigurePrimaryHttpMessageHandler
                 (
                     () =>
                         new SocketsHttpHandler
                         {
-                            AllowAutoRedirect = true
+                            AllowAutoRedirect = true,
                         }
+                )
+                .ConfigureHttpClient
+                (
+                    client =>
+                    {
+                        client.DefaultRequestHeaders.UserAgent.Clear();
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("JetBrains Rider/191.7141355");
+                    }
+                )
+                .ConfigureHttpMessageHandlerBuilder
+                (
+                    builder =>
+                    {
+                        var rateLimitingHandler = new RateLimitingHttpHandler
+                        (
+                            TimeLimiter.GetFromMaxCountByInterval(64, TimeSpan.FromSeconds(8))
+                        );
+
+                        builder.AdditionalHandlers.Add(rateLimitingHandler);
+                    }
                 )
                 .AddPolicyHandler(retryPolicy)
                 .Services
                 .AddSingleton<RepositoryMirrorer>()
-                .BuildServiceProvider();
-
-            var mirrorer = services.GetRequiredService<RepositoryMirrorer>();
-            using (var cancellationSource = new CancellationTokenSource())
+                .BuildServiceProvider())
             {
-                await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {Options.ProductVersions.Humanize()}...");
-                await mirrorer.MirrorRepositoriesAsync(Options.ProductVersions, cancellationSource.Token);
+                var mirrorer = services.GetRequiredService<RepositoryMirrorer>();
+                using (var cancellationSource = new CancellationTokenSource())
+                {
+                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {Options.ProductVersions.Humanize()}...");
+                    await mirrorer.MirrorRepositoriesAsync(Options.ProductVersions, cancellationSource.Token);
+                }
             }
         }
     }
