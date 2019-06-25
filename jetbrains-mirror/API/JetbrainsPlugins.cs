@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -114,20 +115,8 @@ namespace JetBrains.Mirror.API
         /// <param name="plugin">The plugin.</param>
         /// <param name="ct">The cancellation token to use.</param>
         /// <returns>The response from the server.</returns>
-        public async Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin, CancellationToken ct)
-        {
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query[Endpoints.PluginDownload.Parameters.PluginID] = plugin.ID;
-            query[Endpoints.PluginDownload.Parameters.Version] = plugin.Version;
-
-            var uriBuilder = new UriBuilder("https", _baseURL)
-            {
-                Path = Endpoints.PluginDownload.BasePath,
-                Query = query.ToString()
-            };
-
-            return await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
-        }
+        public Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin, CancellationToken ct) =>
+            DownloadSpecificAsync(plugin.ID, plugin.Version, ct);
 
         /// <summary>
         /// Downloads the given plugin.
@@ -149,7 +138,14 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await _httpClient.GetAsync(uriBuilder.Uri, ct);
+            // Resolve moved requests.
+            var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
+            while (!data.IsSuccessStatusCode && data.StatusCode == HttpStatusCode.MovedPermanently)
+            {
+                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+            }
+
+            return data;
         }
 
         /// <summary>
@@ -171,7 +167,14 @@ namespace JetBrains.Mirror.API
                 Query = query.ToString()
             };
 
-            return await _httpClient.GetAsync(uriBuilder.Uri, ct);
+            // Resolve moved requests.
+            var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
+            while (!data.IsSuccessStatusCode && data.StatusCode == HttpStatusCode.MovedPermanently)
+            {
+                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+            }
+
+            return data;
         }
     }
 }
