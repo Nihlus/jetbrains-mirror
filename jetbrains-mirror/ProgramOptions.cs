@@ -17,7 +17,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using CommandLine;
@@ -47,7 +46,7 @@ namespace JetBrains.Mirror
         /// Gets the product versions to mirror plugins for.
         /// </summary>
         [NotNull]
-        [Option('v', "versions", Required = true, HelpText = "The product versions to mirror plugins for.")]
+        [Option('b', "versions", Required = true, HelpText = "The product versions to mirror plugins for.")]
         public IEnumerable<string> ProductVersions { get; }
 
         /// <summary>
