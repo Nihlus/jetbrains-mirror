@@ -99,15 +99,26 @@ namespace JetBrains.Mirror
                 {
                     if (Program.Options.MirrorAllVersions)
                     {
-                        var pluginVersions = await _api.ListVersionsAsync(plugin.ID, ct);
-                        foreach (var versionedPlugin in pluginVersions)
+                        try
                         {
-                            var downloadTask = FinalizeDownload
-                            (
-                                DownloadPluginAsync(targetDirectory, versionedPlugin, ct)
-                            );
+                            var pluginVersions = await _api.ListVersionsAsync(plugin.ID, ct);
+                            foreach (var versionedPlugin in pluginVersions)
+                            {
+                                var downloadTask = FinalizeDownload
+                                (
+                                    DownloadPluginAsync(targetDirectory, versionedPlugin, ct)
+                                );
 
-                            finalizedDownloads.Add(downloadTask);
+                                finalizedDownloads.Add(downloadTask);
+                            }
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            await Console.Out.WriteLineAsync
+                            (
+                                $"[{nameof(RepositoryMirrorer)}]: Failed to fetch version information for " +
+                                $"{plugin.Name}: The download timed out."
+                            );
                         }
                     }
                     else
