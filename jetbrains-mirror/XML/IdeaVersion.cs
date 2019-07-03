@@ -47,5 +47,12 @@ namespace JetBrains.Mirror.XML
         [CanBeNull]
         [XmlAttribute(AttributeName = "since-build")]
         public string SinceBuild { get; set; }
+
+        /// <summary>
+        /// Gets or sets the build the plugin stops being compatible with.
+        /// </summary>
+        [CanBeNull]
+        [XmlAttribute(AttributeName = "until-build")]
+        public string UntilBuild { get; set; }
     }
 }
