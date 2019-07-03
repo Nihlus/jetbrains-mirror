@@ -82,6 +82,7 @@ namespace JetBrains.Mirror.Results
         /// <param name="plugin">The plugin that was successfully downloaded.</param>
         /// <param name="action">The action that was performed.</param>
         /// <returns>The result.</returns>
+        [NotNull]
         public static DownloadResult FromSuccess(IdeaPlugin plugin, DownloadAction action)
         {
             return new DownloadResult(plugin, action);
@@ -94,6 +95,7 @@ namespace JetBrains.Mirror.Results
         /// <param name="result">The result to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
+        [NotNull]
         public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] IResult<DownloadError> result)
         {
             if (result.IsSuccess)
@@ -113,6 +115,7 @@ namespace JetBrains.Mirror.Results
         /// <param name="exception">The exception to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
+        [NotNull]
         public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] Exception exception)
         {
             return FromError(plugin, DownloadError.Exception, exception.Message, exception);
@@ -126,6 +129,7 @@ namespace JetBrains.Mirror.Results
         /// <param name="reason">The reason for the exception.</param>
         /// <returns>A failed result.</returns>
         [Pure]
+        [NotNull]
         public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] Exception exception, [NotNull] string reason)
         {
             return FromError(plugin, DownloadError.Exception, reason, exception);
@@ -140,6 +144,7 @@ namespace JetBrains.Mirror.Results
         /// <param name="exception">The exception that caused the failure, if any.</param>
         /// <returns>A failed result.</returns>
         [Pure]
+        [NotNull]
         public static DownloadResult FromError
         (
             IdeaPlugin plugin,

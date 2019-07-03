@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 using JetBrains.Mirror.XML;
 
 namespace JetBrains.Mirror.API
@@ -88,6 +89,7 @@ namespace JetBrains.Mirror.API
         /// <param name="pluginId">The ID of the plugin to list the versions for.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A list of plugin versions.</returns>
+        [ItemNotNull]
         public async Task<IReadOnlyList<IdeaPlugin>> ListVersionsAsync(string pluginId, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
@@ -115,7 +117,8 @@ namespace JetBrains.Mirror.API
         /// <param name="plugin">The plugin.</param>
         /// <param name="ct">The cancellation token to use.</param>
         /// <returns>The response from the server.</returns>
-        public Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin, CancellationToken ct) =>
+        [NotNull]
+        public Task<HttpResponseMessage> DownloadAsync([NotNull] IdeaPlugin plugin, CancellationToken ct) =>
             DownloadSpecificAsync(plugin.ID, plugin.Version, ct);
 
         /// <summary>
@@ -125,6 +128,7 @@ namespace JetBrains.Mirror.API
         /// <param name="productBuild">The product build to get the latest version for.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The response from the server.</returns>
+        [ItemNotNull]
         public async Task<HttpResponseMessage> DownloadLatestAsync(string pluginId, string productBuild, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
@@ -155,6 +159,7 @@ namespace JetBrains.Mirror.API
         /// <param name="version">The specific version to download.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The response from the server.</returns>
+        [ItemNotNull]
         public async Task<HttpResponseMessage> DownloadSpecificAsync(string pluginId, string version, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);

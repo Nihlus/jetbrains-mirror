@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Humanizer.Bytes;
+using JetBrains.Annotations;
 using JetBrains.Mirror.API;
 using JetBrains.Mirror.Helpers;
 using JetBrains.Mirror.Results;
@@ -53,7 +54,7 @@ namespace JetBrains.Mirror
         /// <param name="repository">The repository to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoryAsync(PluginRepository repository, CancellationToken ct)
+        public async Task MirrorRepositoryAsync([NotNull] PluginRepository repository, CancellationToken ct)
         {
             var totalSize = new ByteSize
             (
@@ -138,7 +139,7 @@ namespace JetBrains.Mirror
         /// <param name="productVersions">The product versions.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoriesAsync(IEnumerable<string> productVersions, CancellationToken ct)
+        public async Task MirrorRepositoriesAsync([NotNull] IEnumerable<string> productVersions, CancellationToken ct)
         {
             var repositories = new List<PluginRepository>();
             foreach (var productVersion in productVersions)
@@ -156,7 +157,7 @@ namespace JetBrains.Mirror
         /// <param name="repositories">The repositories to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoriesAsync(IReadOnlyCollection<PluginRepository> repositories, CancellationToken ct)
+        public async Task MirrorRepositoriesAsync([NotNull] IReadOnlyCollection<PluginRepository> repositories, CancellationToken ct)
         {
             await Console.Out.WriteLineAsync("Merging requested versioned repositories (this might take a while)...");
 
@@ -212,6 +213,7 @@ namespace JetBrains.Mirror
         /// <param name="plugin">The plugin to download.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [ItemNotNull]
         private async Task<DownloadResult> DownloadPluginAsync
         (
             string targetDirectory,
@@ -298,9 +300,9 @@ namespace JetBrains.Mirror
                     return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
                 }
             }
-            catch (OperationCanceledException oex)
+            catch (TimeoutException tex)
             {
-                return DownloadResult.FromError(plugin, DownloadError.Timeout, oex.Message);
+                return DownloadResult.FromError(plugin, DownloadError.Timeout, tex.Message);
             }
             catch (Exception ex)
             {
@@ -308,7 +310,7 @@ namespace JetBrains.Mirror
             }
         }
 
-        private static async Task FinalizeDownload(Task<DownloadResult> downloadTask)
+        private static async Task FinalizeDownload([NotNull] Task<DownloadResult> downloadTask)
         {
             var result = await downloadTask;
             var plugin = result.Plugin;

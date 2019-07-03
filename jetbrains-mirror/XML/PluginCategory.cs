@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace JetBrains.Mirror.XML
 {
@@ -40,6 +41,7 @@ namespace JetBrains.Mirror.XML
         public List<IdeaPlugin> Plugins { get; set; }
 
         /// <inheritdoc />
+        [NotNull]
         public override string ToString()
         {
             return $"{this.Name} ({this.Plugins.Count} plugins)";

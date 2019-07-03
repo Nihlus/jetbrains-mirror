@@ -20,6 +20,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace JetBrains.Mirror.Helpers
 {
@@ -34,7 +35,8 @@ namespace JetBrains.Mirror.Helpers
         /// </summary>
         /// <param name="phrase">The phrase.</param>
         /// <returns>The generated slug.</returns>
-        public static string GenerateSlug(this string phrase)
+        [NotNull]
+        public static string GenerateSlug([NotNull] this string phrase)
         {
             var str = phrase.RemoveDiacritics().ToLower();
 
@@ -56,7 +58,7 @@ namespace JetBrains.Mirror.Helpers
         /// </summary>
         /// <param name="value">The string.</param>
         /// <returns>The string, with diacritics removed.</returns>
-        private static string RemoveDiacritics(this string value)
+        private static string RemoveDiacritics([NotNull] this string value)
         {
             var normalizedString = value.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();

@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace JetBrains.Mirror.XML
 {
@@ -143,7 +144,7 @@ namespace JetBrains.Mirror.XML
         /// </summary>
         /// <param name="other">The other plugin.</param>
         /// <returns>true if the plugins are logically equivalent; otherwise, false.</returns>
-        public bool IsSameAs(IdeaPlugin other)
+        public bool IsSameAs([NotNull] IdeaPlugin other)
         {
             return GetIdentityHash() == other.GetIdentityHash();
         }

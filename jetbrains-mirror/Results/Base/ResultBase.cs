@@ -177,6 +177,7 @@ namespace JetBrains.Mirror.Results
         }
 
         /// <inheritdoc />
+        [NotNull]
         public override string ToString()
         {
             return this.IsSuccess ? "Success" : $"{this.Error}: {this.ErrorReason}";

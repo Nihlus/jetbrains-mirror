@@ -71,6 +71,7 @@ namespace JetBrains.Mirror
         /// Gets a listing of usage examples.
         /// </summary>
         [Usage(ApplicationAlias = "jetbrains-mirror")]
+        [NotNull]
         public static List<Example> UsageExamples => new List<Example>
         {
             new Example

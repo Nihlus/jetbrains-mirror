@@ -42,6 +42,7 @@ namespace JetBrains.Mirror.XML
         public string Email { get; set; }
 
         /// <inheritdoc />
+        [NotNull]
         public override string ToString()
         {
             return $"{this.URL} <{this.Email}>";
