@@ -57,6 +57,7 @@ namespace JetBrains.Mirror
             var jitterer = new Random();
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
+                .Or<TimeoutException>()
                 .Or<TaskCanceledException>(tex => !tex.CancellationToken.IsCancellationRequested)
                 .Or<IOException>(iex => iex.Message.Contains("Connection reset by peer"))
                 .WaitAndRetryAsync
@@ -80,6 +81,9 @@ namespace JetBrains.Mirror
                 (
                     client =>
                     {
+                        // Timeouts are handled in the handler
+                        client.Timeout = Timeout.InfiniteTimeSpan;
+
                         client.DefaultRequestHeaders.UserAgent.Clear();
                         client.DefaultRequestHeaders.UserAgent.ParseAdd("JetBrains Rider/191.7141355");
                     }
@@ -90,10 +94,13 @@ namespace JetBrains.Mirror
                     {
                         var rateLimitingHandler = new RateLimitingHttpHandler
                         (
-                            TimeLimiter.GetFromMaxCountByInterval(64, TimeSpan.FromSeconds(8))
+                            TimeLimiter.GetFromMaxCountByInterval(128, TimeSpan.FromSeconds(1))
                         );
 
+                        var timeoutHandler = new TimeoutHttpHandler();
+
                         builder.AdditionalHandlers.Add(rateLimitingHandler);
+                        builder.AdditionalHandlers.Add(timeoutHandler);
                     }
                 )
                 .AddPolicyHandler(retryPolicy)
