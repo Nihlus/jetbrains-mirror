@@ -113,7 +113,7 @@ namespace JetBrains.Mirror
                                 finalizedDownloads.Add(downloadTask);
                             }
                         }
-                        catch (TaskCanceledException)
+                        catch (TimeoutException)
                         {
                             await Console.Out.WriteLineAsync
                             (
