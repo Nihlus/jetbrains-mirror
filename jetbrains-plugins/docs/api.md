@@ -10,7 +10,7 @@ ProductBuild (RD-191.7141.355)
     Contains product and build information.
 
 UUID
-    Client-unique UUID.
+    Installation-unique UUID.
 
 PluginID (TFS; com.intellij.plugins.watcher)
     A unique plugin name.
@@ -65,3 +65,7 @@ Can't find UpdateIcon with id 64097, theme: DARCULA
     code (product code; RD, CL, etc)
     build (product build)
 
+
+
+## Source references
+https://github.com/JetBrains/intellij-community/blob/be6247932aa9414ddf7831c0e3becba6940f4839/platform/core-impl/src/com/intellij/openapi/application/impl/ApplicationInfoImpl.java#L471
