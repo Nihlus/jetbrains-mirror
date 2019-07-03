@@ -69,3 +69,4 @@ Can't find UpdateIcon with id 64097, theme: DARCULA
 
 ## Source references
 https://github.com/JetBrains/intellij-community/blob/be6247932aa9414ddf7831c0e3becba6940f4839/platform/core-impl/src/com/intellij/openapi/application/impl/ApplicationInfoImpl.java#L471
+https://www.jetbrains.org/intellij/sdk/docs/plugin_repository/index.html
