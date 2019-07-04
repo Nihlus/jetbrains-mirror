@@ -1,5 +1,5 @@
 //
-//  DownloadError.cs
+//  DownloadAction.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -17,31 +17,21 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace JetBrains.Mirror.Results
+namespace JetBrains.Plugins.Mirror.Results
 {
     /// <summary>
-    /// Enumerates various error states.
+    /// Defines actions taken by a download operation.
     /// </summary>
-    public enum DownloadError
+    public enum DownloadAction
     {
         /// <summary>
-        /// The result failed because of an uncaught exception.
+        /// A new file was downloaded.
         /// </summary>
-        Exception,
+        Downloaded,
 
         /// <summary>
-        /// The result failed because the request timed out.
+        /// The file was skipped.
         /// </summary>
-        Timeout,
-
-        /// <summary>
-        /// The result failed because the server returned an invalid response.
-        /// </summary>
-        InvalidResponse,
-
-        /// <summary>
-        /// The result failed, but we don't know why.
-        /// </summary>
-        Unknown
+        Skipped
     }
 }

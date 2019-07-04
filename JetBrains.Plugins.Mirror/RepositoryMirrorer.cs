@@ -26,12 +26,12 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Humanizer.Bytes;
 using JetBrains.Annotations;
-using JetBrains.Mirror.API;
-using JetBrains.Mirror.Helpers;
-using JetBrains.Mirror.Results;
-using JetBrains.Mirror.XML;
+using JetBrains.Plugins.Mirror.API;
+using JetBrains.Plugins.Mirror.Helpers;
+using JetBrains.Plugins.Mirror.Results;
+using JetBrains.Plugins.Models.API.XML;
 
-namespace JetBrains.Mirror
+namespace JetBrains.Plugins.Mirror
 {
     /// <summary>
     /// Handles mirroring a repository.

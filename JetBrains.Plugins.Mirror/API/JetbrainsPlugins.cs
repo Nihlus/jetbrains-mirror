@@ -27,9 +27,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
-using JetBrains.Mirror.XML;
+using JetBrains.Plugins.Models.API.XML;
 
-namespace JetBrains.Mirror.API
+namespace JetBrains.Plugins.Mirror.API
 {
     /// <summary>
     /// Acts as an API handle to the official JetBrains plugin repository.

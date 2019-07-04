@@ -22,7 +22,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.Helpers
+namespace JetBrains.Plugins.Mirror.Helpers
 {
     /// <summary>
     /// Slugs strings provided to it. Based on

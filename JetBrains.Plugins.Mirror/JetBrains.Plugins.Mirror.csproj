@@ -4,7 +4,6 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
-        <RootNamespace>JetBrains.Mirror</RootNamespace>
         <LangVersion>latest</LangVersion>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
@@ -37,6 +36,10 @@
             <Link>stylecop.ruleset</Link>
             <InProject>false</InProject>
         </AdditionalFiles>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\JetBrains.Plugins.Models\JetBrains.Plugins.Models.csproj" />
     </ItemGroup>
 
     <Import Project="..\props\common.props" />

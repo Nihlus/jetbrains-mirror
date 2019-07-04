@@ -19,7 +19,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace JetBrains.Mirror.API
+namespace JetBrains.Plugins.Mirror.API
 {
     /// <summary>
     /// Holds static data about endpoints in the JetBrains API.

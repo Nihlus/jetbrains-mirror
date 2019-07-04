@@ -20,7 +20,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.Results
+namespace JetBrains.Plugins.Mirror.Results
 {
     /// <summary>
     /// Represents the public API of a result.

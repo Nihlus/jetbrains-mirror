@@ -19,9 +19,9 @@
 
 using System;
 using JetBrains.Annotations;
-using JetBrains.Mirror.XML;
+using JetBrains.Plugins.Models.API.XML;
 
-namespace JetBrains.Mirror.Results
+namespace JetBrains.Plugins.Mirror.Results
 {
     /// <summary>
     /// Represents the result of a download operation.
@@ -51,7 +51,7 @@ namespace JetBrains.Mirror.Results
             this.Action = action;
         }
 
-        /// <inheritdoc cref="ResultBase{DownloadResult}(TErrorType?,string,Exception)"/>
+        /// <inheritdoc cref="ResultBase{TResultType,TErrorType}"/>
         [UsedImplicitly]
         private DownloadResult
         (
@@ -63,7 +63,7 @@ namespace JetBrains.Mirror.Results
         {
         }
 
-        /// <inheritdoc cref="ResultBase{DownloadResult}(TErrorType?,string,Exception)"/>
+        /// <inheritdoc cref="ResultBase{TResultType,TErrorType}"/>
         private DownloadResult
         (
             [CanBeNull] IdeaPlugin plugin,

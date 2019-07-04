@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.XML
+namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
     /// Represents a category of plugins.

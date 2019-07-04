@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 using RateLimiter;
 
-namespace JetBrains.Mirror
+namespace JetBrains.Plugins.Mirror
 {
     /// <summary>
     /// Represents a http handler that has a configured rate limit.

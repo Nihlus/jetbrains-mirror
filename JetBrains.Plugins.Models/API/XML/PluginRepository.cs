@@ -20,7 +20,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace JetBrains.Mirror.XML
+namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
     /// Represents an information listing about the official JetBrains plugin repository.

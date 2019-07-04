@@ -24,13 +24,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Humanizer;
-using JetBrains.Mirror.API;
+using JetBrains.Plugins.Mirror.API;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using RateLimiter;
 
-namespace JetBrains.Mirror
+namespace JetBrains.Plugins.Mirror
 {
     /// <summary>
     /// Represents the main class of the program.

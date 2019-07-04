@@ -36,6 +36,10 @@
 
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="API" />
+    </ItemGroup>
 
     <Import Project="..\props\common.props" />
     <Import Project="$(SolutionRoot)\props\stylecop.props" />

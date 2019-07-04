@@ -1,5 +1,5 @@
 //
-//  DownloadAction.cs
+//  Vendor.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -17,21 +17,41 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace JetBrains.Mirror.Results
+using System.Xml.Serialization;
+using JetBrains.Annotations;
+
+namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
-    /// Defines actions taken by a download operation.
+    /// Represents a plugin vendor.
     /// </summary>
-    public enum DownloadAction
+    public class Vendor
     {
         /// <summary>
-        /// A new file was downloaded.
+        /// Gets or sets the vendor's URL.
         /// </summary>
-        Downloaded,
+        [CanBeNull]
+        [XmlAttribute(AttributeName = "url")]
+        public string URL { get; set; }
 
         /// <summary>
-        /// The file was skipped.
+        /// Gets or sets the vendor's main contact email.
         /// </summary>
-        Skipped
+        [CanBeNull]
+        [XmlAttribute(AttributeName = "email")]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vendor's name.
+        /// </summary>
+        [CanBeNull]
+        public string Name { get; set; }
+
+        /// <inheritdoc />
+        [NotNull]
+        public override string ToString()
+        {
+            return $"{this.URL} <{this.Email}>";
+        }
     }
 }

@@ -23,7 +23,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.Results
+namespace JetBrains.Plugins.Mirror.Results
 {
     /// <summary>
     /// Serves as the base class for results.

@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", ".\props", "{47E747
 		props\stylecop.props = props\stylecop.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Mirror", "JetBrains.Mirror\JetBrains.Mirror.csproj", "{91D8DEE1-EA31-4403-9624-784DFE0EDF31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Plugins.Mirror", "JetBrains.Plugins.Mirror\JetBrains.Plugins.Mirror.csproj", "{91D8DEE1-EA31-4403-9624-784DFE0EDF31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Plugins", "JetBrains.Plugins\JetBrains.Plugins.csproj", "{85CC9B82-AD1E-487A-978B-33CE36E93705}"
 EndProject

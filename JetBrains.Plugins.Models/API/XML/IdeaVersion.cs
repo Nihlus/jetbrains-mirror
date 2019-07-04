@@ -20,7 +20,7 @@
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.XML
+namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
     /// Represents the version of the JetBrains IDE the plugin is compatible with.

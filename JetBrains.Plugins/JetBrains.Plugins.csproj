@@ -27,7 +27,7 @@
             <InProject>false</InProject>
         </AdditionalFiles>
     </ItemGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" PrivateAssets="all" />
 
@@ -38,12 +38,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Controllers" />
-      <Folder Include="Models" />
-    </ItemGroup>
-    
+
     <ItemGroup>
       <ProjectReference Include="..\JetBrains.Plugins.Models\JetBrains.Plugins.Models.csproj" />
     </ItemGroup>

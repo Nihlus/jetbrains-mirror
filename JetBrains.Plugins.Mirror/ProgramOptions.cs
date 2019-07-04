@@ -23,7 +23,7 @@ using CommandLine;
 using CommandLine.Text;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror
+namespace JetBrains.Plugins.Mirror
 {
     /// <summary>
     /// Represents the command-line options that can be passed to the program.
@@ -70,7 +70,7 @@ namespace JetBrains.Mirror
         /// <summary>
         /// Gets a listing of usage examples.
         /// </summary>
-        [Usage(ApplicationAlias = "JetBrains.Mirror")]
+        [Usage(ApplicationAlias = "JetBrains.Plugins.Mirror")]
         [NotNull]
         public static List<Example> UsageExamples => new List<Example>
         {
@@ -82,7 +82,7 @@ namespace JetBrains.Mirror
             new Example
             (
                 "Mirror into a specific directory",
-                new ProgramOptions("/var/www/JetBrains.Mirror", new[] { "RD-191.7141.355" }, false, false)
+                new ProgramOptions("/var/www/JetBrains.Plugins.Mirror", new[] { "RD-191.7141.355" }, false, false)
             ),
             new Example
             (

@@ -1,5 +1,5 @@
 //
-//  Vendor.cs
+//  DownloadError.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -17,41 +17,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Xml.Serialization;
-using JetBrains.Annotations;
-
-namespace JetBrains.Mirror.XML
+namespace JetBrains.Plugins.Mirror.Results
 {
     /// <summary>
-    /// Represents a plugin vendor.
+    /// Enumerates various error states.
     /// </summary>
-    public class Vendor
+    public enum DownloadError
     {
         /// <summary>
-        /// Gets or sets the vendor's URL.
+        /// The result failed because of an uncaught exception.
         /// </summary>
-        [CanBeNull]
-        [XmlAttribute(AttributeName = "url")]
-        public string URL { get; set; }
+        Exception,
 
         /// <summary>
-        /// Gets or sets the vendor's main contact email.
+        /// The result failed because the request timed out.
         /// </summary>
-        [CanBeNull]
-        [XmlAttribute(AttributeName = "email")]
-        public string Email { get; set; }
+        Timeout,
 
         /// <summary>
-        /// Gets or sets the vendor's name.
+        /// The result failed because the server returned an invalid response.
         /// </summary>
-        [CanBeNull]
-        public string Name { get; set; }
+        InvalidResponse,
 
-        /// <inheritdoc />
-        [NotNull]
-        public override string ToString()
-        {
-            return $"{this.URL} <{this.Email}>";
-        }
+        /// <summary>
+        /// The result failed, but we don't know why.
+        /// </summary>
+        Unknown
     }
 }

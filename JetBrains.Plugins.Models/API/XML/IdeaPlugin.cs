@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.XML
+namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
     /// Represents information about a single plugin.

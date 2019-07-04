@@ -22,7 +22,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JetBrains.Mirror
+namespace JetBrains.Plugins.Mirror
 {
     /// <summary>
     /// Represents a http handler that has a configured timeout..
