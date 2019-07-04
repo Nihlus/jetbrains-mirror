@@ -38,7 +38,7 @@ namespace JetBrains.Mirror.XML
         /// Gets or sets the list of plugins in the category.
         /// </summary>
         [XmlElement(ElementName = "idea-plugin")]
-        public List<IdeaPlugin> Plugins { get; set; }
+        public List<IdeaPlugin> Plugins { get; set; } = new List<IdeaPlugin>();
 
         /// <inheritdoc />
         [NotNull]

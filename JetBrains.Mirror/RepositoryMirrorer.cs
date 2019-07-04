@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Humanizer.Bytes;
 using JetBrains.Annotations;
 using JetBrains.Mirror.API;
@@ -67,8 +68,6 @@ namespace JetBrains.Mirror
                 $"{totalSize.LargestWholeNumberValue:F1} {totalSize.LargestWholeNumberSymbol}\n"
             );
 
-            var finalizedDownloads = new List<Task>();
-
             var baseDirectory = Path.Combine(Program.Options.OutputFolder, "plugins");
 
             if (Program.Options.VerboseOutput)
@@ -84,8 +83,11 @@ namespace JetBrains.Mirror
             }
 
             await Console.Out.WriteLineAsync("Done. Starting mirroring...");
+
+            var categoryDownloads = new List<(string categoryName, Task<DownloadResult[]> results)>();
             foreach (var category in repository.Categories)
             {
+                var finalizedDownloads = new List<Task<DownloadResult>>();
                 var targetDirectory = Path.Combine(baseDirectory, category.Name.GenerateSlug());
 
                 if (Program.Options.VerboseOutput)
@@ -128,9 +130,36 @@ namespace JetBrains.Mirror
                         finalizedDownloads.Add(downloadTask);
                     }
                 }
+
+                categoryDownloads.Add((category.Name, Task.WhenAll(finalizedDownloads)));
             }
 
-            await Task.WhenAll(finalizedDownloads);
+            // Finally, write the successfully mirrored repository data back out to disk
+            var categoryResults = await Task.WhenAll(categoryDownloads.Select(async pair =>
+            {
+                var (categoryName, task) = pair;
+                var results = await task;
+                return (categoryName, results);
+            }));
+
+            var mirroredRepository = new PluginRepository();
+            foreach (var (categoryName, downloadResults) in categoryResults)
+            {
+                var category = mirroredRepository.Categories.FirstOrDefault(c => c.Name == categoryName) ??
+                               new PluginCategory { Name = categoryName };
+                if (!mirroredRepository.Categories.Contains(category))
+                {
+                    mirroredRepository.Categories.Add(category);
+                }
+
+                category.Plugins.AddRange(downloadResults.Where(r => r.IsSuccess).Select(r => r.Plugin));
+            }
+
+            var serializer = new XmlSerializer(typeof(PluginRepository));
+            using (var output = File.OpenWrite(Path.Combine(baseDirectory, "repository.xml")))
+            {
+                serializer.Serialize(output, mirroredRepository);
+            }
         }
 
         /// <summary>
@@ -325,7 +354,8 @@ namespace JetBrains.Mirror
             }
         }
 
-        private static async Task FinalizeDownload([NotNull] Task<DownloadResult> downloadTask)
+        [ItemNotNull]
+        private static async Task<DownloadResult> FinalizeDownload([NotNull] Task<DownloadResult> downloadTask)
         {
             var result = await downloadTask;
             var plugin = result.Plugin;
@@ -386,7 +416,7 @@ namespace JetBrains.Mirror
 
                 Console.ResetColor();
 
-                return;
+                return result;
             }
 
             switch (result.Action)
@@ -437,6 +467,8 @@ namespace JetBrains.Mirror
             }
 
             Console.ResetColor();
+
+            return result;
         }
     }
 }

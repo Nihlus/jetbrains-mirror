@@ -32,6 +32,6 @@ namespace JetBrains.Mirror.XML
         /// Gets or sets the categories in the repository.
         /// </summary>
         [XmlElement(ElementName = "category")]
-        public List<PluginCategory> Categories { get; set; }
+        public List<PluginCategory> Categories { get; set; } = new List<PluginCategory>();
     }
 }
