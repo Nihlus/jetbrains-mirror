@@ -46,7 +46,7 @@ namespace JetBrains.Plugins.Mirror
         /// Gets the product versions to mirror plugins for.
         /// </summary>
         [NotNull]
-        [Option('b', "versions", Required = true, HelpText = "The product versions to mirror plugins for.")]
+        [Option('b', "builds", Required = true, HelpText = "The product builds to mirror plugins for.")]
         public IEnumerable<string> ProductVersions { get; }
 
         /// <summary>
