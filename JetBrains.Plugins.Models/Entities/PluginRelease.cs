@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 
-// ReSharper disable NotNullMemberIsNotInitialized - EF entities rely on data mapping.
 namespace JetBrains.Plugins.Models
 {
     /// <summary>

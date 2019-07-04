@@ -217,7 +217,7 @@ namespace JetBrains.Mirror
         private async Task<DownloadResult> DownloadPluginAsync
         (
             string targetDirectory,
-            IdeaPlugin plugin,
+            [NotNull] IdeaPlugin plugin,
             CancellationToken ct
         )
         {

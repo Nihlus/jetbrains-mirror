@@ -17,6 +17,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
+
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
@@ -25,13 +28,15 @@ namespace JetBrains.Plugins.Models
     public class PluginDependency : EFEntity
     {
         /// <summary>
-        /// Gets or sets the plugin that depends on the dependency.
+        /// Gets or sets the plugin release that depends on the dependency.
         /// </summary>
-        public Plugin Depender { get; set; }
+        [Required, NotNull]
+        public PluginRelease Depender { get; set; }
 
         /// <summary>
         /// Gets or sets the dependency of the depender.
         /// </summary>
+        [Required, NotNull]
         public Plugin Dependency { get; set; }
     }
 }

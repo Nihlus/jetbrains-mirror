@@ -17,6 +17,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
@@ -27,16 +29,19 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the name of the vendor.
         /// </summary>
+        [CanBeNull]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the primary URL of the vendor.
         /// </summary>
+        [CanBeNull]
         public string URL { get; set; }
 
         /// <summary>
         /// Gets or sets the primary contact email of the vendor.
         /// </summary>
+        [CanBeNull]
         public string Email { get; set; }
     }
 }

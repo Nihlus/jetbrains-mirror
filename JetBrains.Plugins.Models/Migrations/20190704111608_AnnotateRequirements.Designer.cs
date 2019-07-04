@@ -8,15 +8,17 @@ using System.Collections.Generic;
 using JetBrains.Plugins.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace JetBrains.Plugins.Models.Migrations
 {
     [DbContext(typeof(PluginsDatabaseContext))]
-    partial class PluginsDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20190704111608_AnnotateRequirements")]
+    partial class AnnotateRequirements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,11 +90,16 @@ namespace JetBrains.Plugins.Models.Migrations
                     b.Property<decimal>("DependerID")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
+                    b.Property<decimal?>("PluginReleaseID")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
                     b.HasKey("ID");
 
                     b.HasIndex("DependencyID");
 
                     b.HasIndex("DependerID");
+
+                    b.HasIndex("PluginReleaseID");
 
                     b.ToTable("PluginDependency");
                 });
@@ -164,10 +171,14 @@ namespace JetBrains.Plugins.Models.Migrations
                         .HasForeignKey("DependencyID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("JetBrains.Plugins.Models.PluginRelease", "Depender")
-                        .WithMany("Dependencies")
+                    b.HasOne("JetBrains.Plugins.Models.Plugin", "Depender")
+                        .WithMany()
                         .HasForeignKey("DependerID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JetBrains.Plugins.Models.PluginRelease")
+                        .WithMany("Dependencies")
+                        .HasForeignKey("PluginReleaseID");
                 });
 
             modelBuilder.Entity("JetBrains.Plugins.Models.PluginRelease", b =>

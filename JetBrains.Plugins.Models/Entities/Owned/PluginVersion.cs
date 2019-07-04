@@ -19,6 +19,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,26 +38,30 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the major version of the plugin.
         /// </summary>
+        [Required]
         public int Major { get; set; }
 
         /// <summary>
         /// Gets or sets the minor version of the plugin.
         /// </summary>
+        [Required]
         public int Minor { get; set; }
 
         /// <summary>
         /// Gets or sets the patch version of the plugin.
         /// </summary>
+        [Required]
         public int Patch { get; set; }
 
         /// <summary>
         /// Gets or sets any extra version data, such as prerelease or metadata information. This is directly appended
         /// to the version string.
         /// </summary>
+        [CanBeNull]
         public string Extra { get; set; }
 
         /// <inheritdoc />
-        public bool Equals(PluginVersion other)
+        public bool Equals([CanBeNull] PluginVersion other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -71,7 +77,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -92,6 +98,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc />
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode", Justification = "Intentional")]
         public override int GetHashCode()
         {
             unchecked

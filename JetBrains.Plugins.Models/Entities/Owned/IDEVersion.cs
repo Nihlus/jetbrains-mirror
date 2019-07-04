@@ -48,16 +48,18 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the branch build number.
         /// </summary>
+        [CanBeNull]
         public int? Build { get; set; }
 
         /// <summary>
         /// Gets or sets additional, more granular version numbers. These are appended in order after the main version
         /// structure, separated by dots.
         /// </summary>
+        [CanBeNull]
         public List<int> Extra { get; set; }
 
         /// <inheritdoc/>
-        public bool Equals(IDEVersion other)
+        public bool Equals([CanBeNull] IDEVersion other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -76,7 +78,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj))
             {
