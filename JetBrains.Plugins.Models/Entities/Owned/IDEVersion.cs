@@ -55,8 +55,8 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets additional, more granular version numbers. These are appended in order after the main version
         /// structure, separated by dots.
         /// </summary>
-        [CanBeNull]
-        public List<int> Extra { get; set; }
+        [NotNull]
+        public List<int> Extra { get; set; } = new List<int>();
 
         /// <inheritdoc/>
         public bool Equals([CanBeNull] IDEVersion other)
@@ -107,7 +107,7 @@ namespace JetBrains.Plugins.Models
                 var hashCode = this.ProductID != null ? this.ProductID.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ this.Branch;
                 hashCode = (hashCode * 397) ^ this.Build.GetHashCode();
-                hashCode = (hashCode * 397) ^ (this.Extra != null ? this.Extra.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ this.Extra.Aggregate((i, j) => (i * 397) ^ j.GetHashCode());
                 return hashCode;
             }
         }
@@ -135,21 +135,6 @@ namespace JetBrains.Plugins.Models
             if (buildComparison != 0)
             {
                 return buildComparison;
-            }
-
-            if (this.Extra is null && other.Extra is null)
-            {
-                return 0;
-            }
-
-            if (other.Extra is null)
-            {
-                return 1;
-            }
-
-            if (this.Extra is null)
-            {
-                return -1;
             }
 
             foreach (var (i, j) in other.Extra.Zip(this.Extra, (i, j) => (i, j)))

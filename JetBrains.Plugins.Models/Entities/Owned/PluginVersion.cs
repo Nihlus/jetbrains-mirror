@@ -73,7 +73,10 @@ namespace JetBrains.Plugins.Models
                 return true;
             }
 
-            return this.Major == other.Major && this.Minor == other.Minor && this.Patch == other.Patch && string.Equals(this.Extra, other.Extra);
+            return this.Major == other.Major &&
+                   this.Minor == other.Minor &&
+                   this.Patch == other.Patch &&
+                   string.Equals(this.Extra, other.Extra);
         }
 
         /// <inheritdoc />
