@@ -70,7 +70,7 @@ namespace JetBrains.Mirror
         /// <summary>
         /// Gets a listing of usage examples.
         /// </summary>
-        [Usage(ApplicationAlias = "jetbrains-mirror")]
+        [Usage(ApplicationAlias = "JetBrains.Mirror")]
         [NotNull]
         public static List<Example> UsageExamples => new List<Example>
         {
@@ -82,7 +82,7 @@ namespace JetBrains.Mirror
             new Example
             (
                 "Mirror into a specific directory",
-                new ProgramOptions("/var/www/jetbrains-mirror", new[] { "RD-191.7141.355" }, false, false)
+                new ProgramOptions("/var/www/JetBrains.Mirror", new[] { "RD-191.7141.355" }, false, false)
             ),
             new Example
             (

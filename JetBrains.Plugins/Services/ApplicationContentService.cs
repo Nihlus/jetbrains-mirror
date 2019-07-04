@@ -1,5 +1,5 @@
 //
-//  Vendor.cs
+//  ApplicationContentService.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -17,35 +17,32 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace JetBrains.Mirror.XML
+namespace Jetbrains.Plugins.Services
 {
     /// <summary>
-    /// Represents a plugin vendor.
+    /// Serves local application-specific content.
     /// </summary>
-    public class Vendor
+    public class ApplicationContentService
     {
         /// <summary>
-        /// Gets or sets the vendor's URL.
+        /// Gets the database connection string.
         /// </summary>
         [CanBeNull]
-        [XmlAttribute(AttributeName = "url")]
-        public string URL { get; set; }
+        public string ConnectionString { get; }
 
         /// <summary>
-        /// Gets or sets the vendor's main contact email.
+        /// Initializes a new instance of the <see cref="ApplicationContentService"/> class.
         /// </summary>
-        [CanBeNull]
-        [XmlAttribute(AttributeName = "email")]
-        public string Email { get; set; }
-
-        /// <inheritdoc />
-        [NotNull]
-        public override string ToString()
+        public ApplicationContentService()
         {
-            return $"{this.URL} <{this.Email}>";
+            this.ConnectionString = LoadConnectionString();
+        }
+
+        private string LoadConnectionString()
+        {
+            const string filename = "db.auth";
         }
     }
 }

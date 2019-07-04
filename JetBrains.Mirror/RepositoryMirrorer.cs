@@ -221,6 +221,30 @@ namespace JetBrains.Mirror
             CancellationToken ct
         )
         {
+            // First, let's perform a quick existing file check against the values in the reported plugin
+            var sluggedPluginName = plugin.Name.GenerateSlug();
+            var version = plugin.Version;
+
+            var saveDirectory = Path.Combine
+            (
+                targetDirectory,
+                sluggedPluginName,
+                version
+            );
+
+            if (Directory.Exists(saveDirectory))
+            {
+                var existingFile = Directory.GetFiles(saveDirectory).FirstOrDefault();
+                if (!(existingFile is null))
+                {
+                    if ((ulong)new FileInfo(existingFile).Length == plugin.Size)
+                    {
+                        // Looks like we already have this one
+                        return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
+                    }
+                }
+            }
+
             try
             {
                 using (var data = await _api.DownloadAsync(plugin, ct))
@@ -258,23 +282,14 @@ namespace JetBrains.Mirror
                         );
                     }
 
-                    var sluggedPluginName = plugin.Name.GenerateSlug();
-                    var version = plugin.Version;
-
-                    var saveDirectory = Path.Combine
-                    (
-                        targetDirectory,
-                        sluggedPluginName,
-                        version
-                    );
-
                     Directory.CreateDirectory(saveDirectory);
 
                     var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
 
                     if (File.Exists(savePath))
                     {
-                        if ((ulong)new FileInfo(savePath).Length == plugin.Size)
+                        var expectedSize = data.Content.Headers?.ContentLength ?? (long)plugin.Size;
+                        if (new FileInfo(savePath).Length == expectedSize)
                         {
                             // Looks like we already have this one
                             return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
