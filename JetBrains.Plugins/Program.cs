@@ -20,7 +20,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Jetbrains.Plugins
+namespace JetBrains.Plugins
 {
     /// <summary>
     /// The main class of the program.

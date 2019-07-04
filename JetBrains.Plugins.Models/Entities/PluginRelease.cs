@@ -82,6 +82,6 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the list of plugins that this plugin depends on.
         /// </summary>
         [NotNull]
-        public IList<PluginDependency> Dependencies { get; set; } = new List<PluginDependency>();
+        public List<PluginDependency> Dependencies { get; set; } = new List<PluginDependency>();
     }
 }

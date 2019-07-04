@@ -472,3 +472,6 @@ coverage-*.acv
 
 ### Download artifacts
 plugins/
+
+### Secrets
+db.auth

@@ -19,6 +19,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable NotNullMemberIsNotInitialized - EF entities rely on data mapping.
 namespace JetBrains.Plugins.Models
@@ -26,6 +27,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents a range of supported IDE versions.
     /// </summary>
+    [Owned]
     public class IDEVersionRange
     {
         /// <summary>

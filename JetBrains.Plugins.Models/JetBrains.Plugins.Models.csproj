@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
         <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
         <LangVersion>latest</LangVersion>
         <DebugSymbols>true</DebugSymbols>
@@ -31,6 +31,10 @@
         <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" PrivateAssets="all" />
 
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     </ItemGroup>
 
     <Import Project="..\props\common.props" />

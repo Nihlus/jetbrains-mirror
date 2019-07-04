@@ -63,13 +63,13 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the list of released versions of this plugin.
         /// </summary>
         [Required, NotNull]
-        public IList<PluginRelease> Releases { get; set; }
+        public List<PluginRelease> Releases { get; set; }
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
         [Required, NotNull]
-        public IList<string> Tags { get; set; }
+        public List<string> Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the community rating of the plugin.
@@ -82,41 +82,5 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         [Required, NotNull]
         public string ProjectURL { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Plugin"/> class.
-        /// </summary>
-        /// <param name="name">The name of the plugin.</param>
-        /// <param name="category">The category that the plugin belongs to.</param>
-        /// <param name="pluginID">The unique ID of the plugin.</param>
-        /// <param name="description">The description of the plugin.</param>
-        /// <param name="vendor">The plugin vendor.</param>
-        /// <param name="releases">The released versions of the plugin.</param>
-        /// <param name="tags">The tags applied to the plugin.</param>
-        /// <param name="rating">The rating of the plugin.</param>
-        /// <param name="projectURL">The plugin's project URL.</param>
-        public Plugin
-        (
-            [NotNull] string name,
-            [NotNull] PluginCategory category,
-            [NotNull] string pluginID,
-            [NotNull] string description,
-            [NotNull] Vendor vendor,
-            [CanBeNull] IList<PluginRelease> releases = null,
-            [CanBeNull] IList<string> tags = null,
-            double rating = default,
-            [CanBeNull] string projectURL = null
-        )
-        {
-            this.Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.Category = category ?? throw new ArgumentNullException(nameof(category));
-            this.PluginID = pluginID ?? throw new ArgumentNullException(nameof(pluginID));
-            this.Description = description ?? throw new ArgumentNullException(nameof(description));
-            this.Vendor = vendor ?? throw new ArgumentNullException(nameof(vendor));
-            this.Releases = releases ?? new List<PluginRelease>();
-            this.Tags = tags ?? new List<string>();
-            this.Rating = rating;
-            this.ProjectURL = projectURL ?? string.Empty;
-        }
     }
 }

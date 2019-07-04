@@ -54,7 +54,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets additional, more granular version numbers. These are appended in order after the main version
         /// structure, separated by dots.
         /// </summary>
-        public IList<int> Extra { get; set; }
+        public List<int> Extra { get; set; }
 
         /// <inheritdoc/>
         public bool Equals(IDEVersion other)

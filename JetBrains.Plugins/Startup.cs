@@ -17,8 +17,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
 using JetBrains.Plugins.Models;
-using Jetbrains.Plugins.Services;
+using JetBrains.Plugins.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jetbrains.Plugins
+namespace JetBrains.Plugins
 {
     /// <summary>
     /// Handles startup procedures for the application.
@@ -51,7 +52,7 @@ namespace Jetbrains.Plugins
         /// Configures the services of the application.
         /// </summary>
         /// <param name="services">The service container.</param>
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices([NotNull] IServiceCollection services)
         {
             var content = new ApplicationContentService();
 
@@ -59,6 +60,8 @@ namespace Jetbrains.Plugins
                 .AddMvc()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddXmlSerializerFormatters();
+
+            services.AddSingleton(content);
 
             services.AddDbContextPool<PluginsDatabaseContext>
             (

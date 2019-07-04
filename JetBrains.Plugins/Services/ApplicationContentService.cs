@@ -17,9 +17,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.IO;
 using JetBrains.Annotations;
 
-namespace Jetbrains.Plugins.Services
+namespace JetBrains.Plugins.Services
 {
     /// <summary>
     /// Serves local application-specific content.
@@ -29,7 +30,7 @@ namespace Jetbrains.Plugins.Services
         /// <summary>
         /// Gets the database connection string.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         public string ConnectionString { get; }
 
         /// <summary>
@@ -40,9 +41,29 @@ namespace Jetbrains.Plugins.Services
             this.ConnectionString = LoadConnectionString();
         }
 
+        [NotNull]
         private string LoadConnectionString()
         {
             const string filename = "db.auth";
+            var connectionStringPath = Path.Combine("content", "app", filename);
+            if (!File.Exists(connectionStringPath))
+            {
+                throw new FileNotFoundException("Could not find the database credentials.", connectionStringPath);
+            }
+
+            var passfileContents = File.ReadAllText(connectionStringPath).Split(':');
+            if (passfileContents.Length != 5)
+            {
+                throw new InvalidDataException("The credential file was of an invalid format.");
+            }
+
+            var host = passfileContents[0];
+            var port = passfileContents[1];
+            var database = passfileContents[2];
+            var username = passfileContents[3];
+            var password = passfileContents[4];
+
+            return $"Host={host};Port={port};Database={database};Username={username};Password={password}";
         }
     }
 }
