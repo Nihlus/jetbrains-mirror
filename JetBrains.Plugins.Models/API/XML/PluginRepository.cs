@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Models.API.XML
 {
@@ -31,6 +32,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the categories in the repository.
         /// </summary>
+        [NotNull]
         [XmlElement(ElementName = "category")]
         public List<PluginCategory> Categories { get; set; } = new List<PluginCategory>();
     }

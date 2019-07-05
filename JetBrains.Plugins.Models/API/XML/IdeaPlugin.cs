@@ -32,61 +32,63 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the name of the plugin.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the ID of the plugin.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "id")]
         public string ID { get; set; }
 
         /// <summary>
         /// Gets or sets the description of the plugin.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the latest version of the plugin.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "version")]
         public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets the vendor that develops the plugin.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "vendor")]
         public Vendor Vendor { get; set; }
 
         /// <summary>
         /// Gets or sets the IDEA versions that the plugin supports.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "idea-version")]
         public IdeaVersion IdeaVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the latest change notes.
         /// </summary>
-        [Required]
+        [Required, NotNull]
         [XmlElement(ElementName = "change-notes")]
         public string ChangeNotes { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugins this plugin depends on.
         /// </summary>
+        [CanBeNull]
         [XmlElement(ElementName = "depends")]
         public List<string> Depends { get; set; }
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
+        [CanBeNull]
         [XmlElement(ElementName = "tags")]
         public string Tags { get; set; }
 
@@ -112,18 +114,21 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the project URL of the plugin.
         /// </summary>
+        [CanBeNull]
         [XmlAttribute(AttributeName = "url")]
         public string ProjectURL { get; set; }
 
         /// <summary>
         /// Gets or sets the initial upload date of the plugin.
         /// </summary>
+        [CanBeNull]
         [XmlAttribute(AttributeName = "date")]
         public string UploadDate { get; set; }
 
         /// <summary>
         /// Gets or sets the latest update date of the plugin.
         /// </summary>
+        [CanBeNull]
         [XmlAttribute(AttributeName = "updatedDate")]
         public string UpdateDate { get; set; }
 
@@ -135,7 +140,7 @@ namespace JetBrains.Plugins.Models.API.XML
         {
             unchecked
             {
-                return ((this.ID?.GetHashCode() ?? 0) * 397) ^ (this.Version?.GetHashCode() ?? 0);
+                return (this.ID.GetHashCode() * 397) ^ this.Version.GetHashCode();
             }
         }
 
@@ -150,6 +155,7 @@ namespace JetBrains.Plugins.Models.API.XML
         }
 
         /// <inheritdoc />
+        [NotNull]
         public override string ToString()
         {
             return this.Name;
