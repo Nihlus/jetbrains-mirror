@@ -19,6 +19,7 @@
 
 using System.IO;
 using JetBrains.Annotations;
+using JetBrains.Plugins.Models.PostgreSQL;
 
 namespace JetBrains.Plugins.Services
 {
@@ -51,19 +52,12 @@ namespace JetBrains.Plugins.Services
                 throw new FileNotFoundException("Could not find the database credentials.", connectionStringPath);
             }
 
-            var passfileContents = File.ReadAllText(connectionStringPath).Split(':');
-            if (passfileContents.Length != 5)
+            if (!Passfile.TryParse(File.ReadAllText(connectionStringPath), out var result))
             {
                 throw new InvalidDataException("The credential file was of an invalid format.");
             }
 
-            var host = passfileContents[0];
-            var port = passfileContents[1];
-            var database = passfileContents[2];
-            var username = passfileContents[3];
-            var password = passfileContents[4];
-
-            return $"Host={host};Port={port};Database={database};Username={username};Password={password}";
+            return result.ConnectionString;
         }
     }
 }
