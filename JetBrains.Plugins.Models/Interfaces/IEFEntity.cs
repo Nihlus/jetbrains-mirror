@@ -27,6 +27,6 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the primary key ID of the entity.
         /// </summary>
-        ulong ID { get; set; }
+        long ID { get; set; }
     }
 }
