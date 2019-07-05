@@ -15,7 +15,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JetBrains.Plugins.Models.Migrations
 {
     [DbContext(typeof(PluginsDatabaseContext))]
-    [Migration("20190704112144_InitialCreate")]
+    [Migration("20190705084648_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,12 +28,10 @@ namespace JetBrains.Plugins.Models.Migrations
 
             modelBuilder.Entity("JetBrains.Plugins.Models.Plugin", b =>
                 {
-                    b.Property<decimal>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("CategoryID")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("CategoryID");
 
                     b.Property<string>("Description")
                         .IsRequired();
@@ -52,23 +50,17 @@ namespace JetBrains.Plugins.Models.Migrations
                     b.Property<List<string>>("Tags")
                         .IsRequired();
 
-                    b.Property<decimal>("VendorID")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
                     b.HasKey("ID");
 
                     b.HasIndex("CategoryID");
-
-                    b.HasIndex("VendorID");
 
                     b.ToTable("Plugins");
                 });
 
             modelBuilder.Entity("JetBrains.Plugins.Models.PluginCategory", b =>
                 {
-                    b.Property<decimal>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -80,15 +72,12 @@ namespace JetBrains.Plugins.Models.Migrations
 
             modelBuilder.Entity("JetBrains.Plugins.Models.PluginDependency", b =>
                 {
-                    b.Property<decimal>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("DependencyID")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("DependencyID");
 
-                    b.Property<decimal>("DependerID")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("DependerID");
 
                     b.HasKey("ID");
 
@@ -101,9 +90,8 @@ namespace JetBrains.Plugins.Models.Migrations
 
             modelBuilder.Entity("JetBrains.Plugins.Models.PluginRelease", b =>
                 {
-                    b.Property<decimal>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ChangeNotes")
                         .IsRequired();
@@ -114,8 +102,7 @@ namespace JetBrains.Plugins.Models.Migrations
                     b.Property<string>("Hash")
                         .IsRequired();
 
-                    b.Property<decimal>("PluginID")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                    b.Property<long>("PluginID");
 
                     b.Property<decimal>("Size")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
@@ -129,23 +116,6 @@ namespace JetBrains.Plugins.Models.Migrations
                     b.ToTable("PluginRelease");
                 });
 
-            modelBuilder.Entity("JetBrains.Plugins.Models.Vendor", b =>
-                {
-                    b.Property<decimal>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("URL");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Vendor");
-                });
-
             modelBuilder.Entity("JetBrains.Plugins.Models.Plugin", b =>
                 {
                     b.HasOne("JetBrains.Plugins.Models.PluginCategory", "Category")
@@ -153,10 +123,25 @@ namespace JetBrains.Plugins.Models.Migrations
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("JetBrains.Plugins.Models.Vendor", "Vendor")
-                        .WithMany()
-                        .HasForeignKey("VendorID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.OwnsOne("JetBrains.Plugins.Models.Vendor", "Vendor", b1 =>
+                        {
+                            b1.Property<long>("PluginID");
+
+                            b1.Property<string>("Email");
+
+                            b1.Property<string>("Name");
+
+                            b1.Property<string>("URL");
+
+                            b1.HasKey("PluginID");
+
+                            b1.ToTable("Plugins");
+
+                            b1.HasOne("JetBrains.Plugins.Models.Plugin")
+                                .WithOne("Vendor")
+                                .HasForeignKey("JetBrains.Plugins.Models.Vendor", "PluginID")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("JetBrains.Plugins.Models.PluginDependency", b =>
@@ -181,8 +166,7 @@ namespace JetBrains.Plugins.Models.Migrations
 
                     b.OwnsOne("JetBrains.Plugins.Models.IDEVersionRange", "CompatibleWith", b1 =>
                         {
-                            b1.Property<decimal>("PluginReleaseID")
-                                .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                            b1.Property<long>("PluginReleaseID");
 
                             b1.HasKey("PluginReleaseID");
 
@@ -195,8 +179,7 @@ namespace JetBrains.Plugins.Models.Migrations
 
                             b1.OwnsOne("JetBrains.Plugins.Models.IDEVersion", "SinceBuild", b2 =>
                                 {
-                                    b2.Property<decimal>("IDEVersionRangePluginReleaseID")
-                                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                                    b2.Property<long>("IDEVersionRangePluginReleaseID");
 
                                     b2.Property<int>("Branch");
 
@@ -219,8 +202,7 @@ namespace JetBrains.Plugins.Models.Migrations
 
                             b1.OwnsOne("JetBrains.Plugins.Models.IDEVersion", "UntilBuild", b2 =>
                                 {
-                                    b2.Property<decimal>("IDEVersionRangePluginReleaseID")
-                                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                                    b2.Property<long>("IDEVersionRangePluginReleaseID");
 
                                     b2.Property<int>("Branch");
 
@@ -244,8 +226,7 @@ namespace JetBrains.Plugins.Models.Migrations
 
                     b.OwnsOne("JetBrains.Plugins.Models.PluginVersion", "Version", b1 =>
                         {
-                            b1.Property<decimal>("PluginReleaseID")
-                                .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+                            b1.Property<long>("PluginReleaseID");
 
                             b1.Property<string>("Extra");
 
