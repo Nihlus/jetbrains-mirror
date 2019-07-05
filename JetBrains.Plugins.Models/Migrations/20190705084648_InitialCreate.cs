@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace JetBrains.Plugins.Models.Migrations
 {
@@ -17,7 +18,8 @@ namespace JetBrains.Plugins.Models.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    ID = table.Column<decimal>(nullable: false),
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -26,29 +28,18 @@ namespace JetBrains.Plugins.Models.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vendor",
-                columns: table => new
-                {
-                    ID = table.Column<decimal>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    URL = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Vendor", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Plugins",
                 columns: table => new
                 {
-                    ID = table.Column<decimal>(nullable: false),
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(nullable: false),
-                    CategoryID = table.Column<decimal>(nullable: false),
+                    CategoryID = table.Column<long>(nullable: false),
                     PluginID = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: false),
-                    VendorID = table.Column<decimal>(nullable: false),
+                    Vendor_Name = table.Column<string>(nullable: true),
+                    Vendor_URL = table.Column<string>(nullable: true),
+                    Vendor_Email = table.Column<string>(nullable: true),
                     Tags = table.Column<List<string>>(nullable: false),
                     Rating = table.Column<double>(nullable: false),
                     ProjectURL = table.Column<string>(nullable: false)
@@ -62,20 +53,15 @@ namespace JetBrains.Plugins.Models.Migrations
                         principalTable: "Categories",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Plugins_Vendor_VendorID",
-                        column: x => x.VendorID,
-                        principalTable: "Vendor",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "PluginRelease",
                 columns: table => new
                 {
-                    ID = table.Column<decimal>(nullable: false),
-                    PluginID = table.Column<decimal>(nullable: false),
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    PluginID = table.Column<long>(nullable: false),
                     ChangeNotes = table.Column<string>(nullable: false),
                     Downloads = table.Column<decimal>(nullable: false),
                     Size = table.Column<decimal>(nullable: false),
@@ -109,9 +95,10 @@ namespace JetBrains.Plugins.Models.Migrations
                 name: "PluginDependency",
                 columns: table => new
                 {
-                    ID = table.Column<decimal>(nullable: false),
-                    DependerID = table.Column<decimal>(nullable: false),
-                    DependencyID = table.Column<decimal>(nullable: false)
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    DependerID = table.Column<long>(nullable: false),
+                    DependencyID = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,11 +136,6 @@ namespace JetBrains.Plugins.Models.Migrations
                 name: "IX_Plugins_CategoryID",
                 table: "Plugins",
                 column: "CategoryID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Plugins_VendorID",
-                table: "Plugins",
-                column: "VendorID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -169,9 +151,6 @@ namespace JetBrains.Plugins.Models.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "Vendor");
         }
     }
 }

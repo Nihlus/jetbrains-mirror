@@ -1,5 +1,5 @@
 //
-//  IEFEntity.cs
+//  VendorExtensions.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -17,16 +17,31 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace JetBrains.Plugins.Models
+using System;
+using JetBrains.Annotations;
+using JetBrains.Plugins.Models.API.XML;
+
+namespace JetBrains.Plugins.Import.Extensions
 {
     /// <summary>
-    /// Represents the public interface of a generic EF entity.
+    /// Extensions methods for the <see cref="PluginCategory"/> class.
     /// </summary>
-    public interface IEFEntity
+    public static class VendorExtensions
     {
         /// <summary>
-        /// Gets or sets the primary key ID of the entity.
+        /// Maps the given <see cref="PluginCategory"/> to a <see cref="Models.PluginCategory"/>.
         /// </summary>
-        long ID { get; set; }
+        /// <param name="this">The category.</param>
+        /// <returns>The mapped category.</returns>
+        [NotNull]
+        public static Models.Vendor ToEntity([NotNull] this Vendor @this)
+        {
+            return new Models.Vendor
+            {
+                Name = @this.Name,
+                Email = @this.Email,
+                URL = @this.URL,
+            };
+        }
     }
 }

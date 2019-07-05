@@ -1,5 +1,5 @@
 //
-//  PluginRepository.cs
+//  PluginCategoryExtensions.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -18,22 +18,30 @@
 //
 
 using System.Collections.Generic;
-using System.Xml.Serialization;
 using JetBrains.Annotations;
+using JetBrains.Plugins.Models;
+using PluginCategory = JetBrains.Plugins.Models.API.XML.PluginCategory;
 
-namespace JetBrains.Plugins.Models.API.XML
+namespace JetBrains.Plugins.Import.Extensions
 {
     /// <summary>
-    /// Represents an information listing about the official JetBrains plugin repository.
+    /// Extensions methods for the <see cref="PluginCategory"/> class.
     /// </summary>
-    [XmlRoot(ElementName = "plugin-repository")]
-    public class PluginRepository
+    public static class PluginCategoryExtensions
     {
         /// <summary>
-        /// Gets or sets the categories in the repository.
+        /// Maps the given <see cref="PluginCategory"/> to a <see cref="Models.PluginCategory"/>.
         /// </summary>
+        /// <param name="this">The category.</param>
+        /// <returns>The mapped category.</returns>
         [NotNull]
-        [XmlElement(ElementName = "category")]
-        public List<PluginCategory> Categories { get; set; } = new List<PluginCategory>();
+        public static Models.PluginCategory ToEntity([NotNull] this PluginCategory @this)
+        {
+            return new Models.PluginCategory
+            {
+                Name = @this.Name,
+                Plugins = new List<Plugin>()
+            };
+        }
     }
 }

@@ -25,6 +25,6 @@ namespace JetBrains.Plugins.Models
     public abstract class EFEntity : IEFEntity
     {
         /// <inheritdoc />
-        public ulong ID { get; set; }
+        public long ID { get; set; }
     }
 }

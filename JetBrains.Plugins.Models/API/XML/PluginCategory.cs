@@ -18,6 +18,7 @@
 //
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
@@ -31,12 +32,14 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the name of the category.
         /// </summary>
+        [Required, NotNull]
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugins in the category.
         /// </summary>
+        [NotNull]
         [XmlElement(ElementName = "idea-plugin")]
         public List<IdeaPlugin> Plugins { get; set; } = new List<IdeaPlugin>();
 
