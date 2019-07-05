@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Plugins", "JetBra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Plugins.Models", "JetBrains.Plugins.Models\JetBrains.Plugins.Models.csproj", "{0467119D-DD3C-4C21-BAED-122D45B125B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBrains.Plugins.Import", "JetBrains.Plugins.Import\JetBrains.Plugins.Import.csproj", "{F095B686-5296-4732-9D04-149D595DC904}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{0467119D-DD3C-4C21-BAED-122D45B125B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0467119D-DD3C-4C21-BAED-122D45B125B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0467119D-DD3C-4C21-BAED-122D45B125B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F095B686-5296-4732-9D04-149D595DC904}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F095B686-5296-4732-9D04-149D595DC904}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F095B686-5296-4732-9D04-149D595DC904}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F095B686-5296-4732-9D04-149D595DC904}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
