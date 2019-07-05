@@ -18,13 +18,15 @@
 //
 
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
     /// Represents a plugin vendor.
     /// </summary>
-    public class Vendor : EFEntity
+    [Owned]
+    public class Vendor
     {
         /// <summary>
         /// Gets or sets the name of the vendor.
