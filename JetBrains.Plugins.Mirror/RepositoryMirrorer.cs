@@ -146,7 +146,7 @@ namespace JetBrains.Plugins.Mirror
             foreach (var (categoryName, downloadResults) in categoryResults)
             {
                 var category = mirroredRepository.Categories.FirstOrDefault(c => c.Name == categoryName) ??
-                               new PluginCategory { Name = categoryName };
+                               new PluginCategory(categoryName);
                 if (!mirroredRepository.Categories.Contains(category))
                 {
                     mirroredRepository.Categories.Add(category);
@@ -221,10 +221,10 @@ namespace JetBrains.Plugins.Mirror
             (
                 kvp =>
                     new PluginCategory
-                    {
-                        Name = kvp.Key,
-                        Plugins = kvp.Value.Values.ToList()
-                    }
+                    (
+                        kvp.Key,
+                        kvp.Value.Values.ToList()
+                    )
             );
 
             var mergedRepository = new PluginRepository

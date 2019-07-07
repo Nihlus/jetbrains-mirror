@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
@@ -41,7 +42,29 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [NotNull]
         [XmlElement(ElementName = "idea-plugin")]
-        public List<IdeaPlugin> Plugins { get; set; } = new List<IdeaPlugin>();
+        public List<IdeaPlugin> Plugins { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by XmlSerializer.")]
+        protected PluginCategory()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// </summary>
+        /// <param name="name">The name of the category.</param>
+        /// <param name="plugins">The plugins in the category.</param>
+        public PluginCategory(string name, List<IdeaPlugin> plugins = null)
+        {
+            plugins = plugins ?? new List<IdeaPlugin>();
+
+            this.Name = name;
+            this.Plugins = plugins;
+        }
 
         /// <inheritdoc />
         [NotNull]
