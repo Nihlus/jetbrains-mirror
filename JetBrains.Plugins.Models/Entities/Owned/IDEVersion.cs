@@ -38,7 +38,7 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the product ID of this version.
         /// </summary>
-        [Required, CanBeNull]
+        [CanBeNull]
         public string ProductID { get; set; }
 
         /// <summary>
