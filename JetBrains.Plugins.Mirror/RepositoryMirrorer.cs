@@ -266,7 +266,7 @@ namespace JetBrains.Plugins.Mirror
                 var existingFile = Directory.GetFiles(saveDirectory).FirstOrDefault();
                 if (!(existingFile is null))
                 {
-                    if ((ulong)new FileInfo(existingFile).Length == plugin.Size)
+                    if (new FileInfo(existingFile).Length == plugin.Size)
                     {
                         // Looks like we already have this one
                         return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
