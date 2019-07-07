@@ -17,7 +17,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +32,7 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the lower inclusive bound of the compatibility range.
         /// </summary>
-        [Required, NotNull]
+        [CanBeNull]
         public IDEVersion SinceBuild { get; set; }
 
         /// <summary>
@@ -49,9 +48,19 @@ namespace JetBrains.Plugins.Models
         /// <returns>true if the version falls inside of the range; otherwise, false.</returns>
         public bool IsInRange([NotNull] IDEVersion version)
         {
+            if (this.SinceBuild is null && this.UntilBuild is null)
+            {
+                return false;
+            }
+
             if (this.UntilBuild is null)
             {
                 return version >= this.SinceBuild;
+            }
+
+            if (this.SinceBuild is null)
+            {
+                return version < this.UntilBuild;
             }
 
             return version >= this.SinceBuild && version < this.UntilBuild;
