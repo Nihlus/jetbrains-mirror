@@ -25,6 +25,7 @@ namespace JetBrains.Plugins.Models.PostgreSQL
     /// <summary>
     /// Represents a parsed PostgreSQL passfile.
     /// </summary>
+    [PublicAPI]
     public class Passfile
     {
         /// <summary>

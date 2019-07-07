@@ -28,6 +28,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents a single versioned release of a plugin.
     /// </summary>
+    [PublicAPI]
     public class PluginRelease : EFEntity
     {
         /// <summary>

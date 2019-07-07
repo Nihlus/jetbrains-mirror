@@ -25,6 +25,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// <summary>
     /// Represents a plugin vendor.
     /// </summary>
+    [PublicAPI]
     public class IdeaVendor
     {
         /// <summary>

@@ -26,7 +26,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents a range of supported IDE versions.
     /// </summary>
-    [Owned]
+    [PublicAPI, Owned]
     public class IDEVersionRange
     {
         /// <summary>

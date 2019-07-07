@@ -17,11 +17,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
     /// Acts as a base class for EF entities.
     /// </summary>
+    [PublicAPI]
     public abstract class EFEntity : IEFEntity
     {
         /// <inheritdoc />

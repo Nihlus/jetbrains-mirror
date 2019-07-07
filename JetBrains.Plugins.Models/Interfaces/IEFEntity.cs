@@ -17,11 +17,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using JetBrains.Annotations;
+
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
     /// Represents the public interface of a generic EF entity.
     /// </summary>
+    [PublicAPI]
     public interface IEFEntity
     {
         /// <summary>

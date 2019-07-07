@@ -27,6 +27,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents a category of plugins.
     /// </summary>
+    [PublicAPI]
     public class PluginCategory : EFEntity
     {
         /// <summary>

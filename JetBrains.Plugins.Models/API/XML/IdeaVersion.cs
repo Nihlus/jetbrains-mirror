@@ -25,6 +25,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// <summary>
     /// Represents the version of the JetBrains IDE the plugin is compatible with.
     /// </summary>
+    [PublicAPI]
     public class IdeaVersion
     {
         /// <summary>

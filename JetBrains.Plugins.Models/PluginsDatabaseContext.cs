@@ -25,6 +25,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents the plugin database.
     /// </summary>
+    [PublicAPI]
     public class PluginsDatabaseContext : DbContext
     {
         /// <summary>

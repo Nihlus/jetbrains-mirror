@@ -27,6 +27,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// <summary>
     /// Represents an information listing about the official JetBrains plugin repository.
     /// </summary>
+    [PublicAPI]
     [XmlRoot(ElementName = "plugin-repository")]
     public class IdeaPluginRepository
     {

@@ -25,7 +25,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// Represents a plugin vendor.
     /// </summary>
-    [Owned]
+    [PublicAPI, Owned]
     public class Vendor
     {
         /// <summary>

@@ -32,7 +32,7 @@ namespace JetBrains.Plugins.Models
     /// <summary>
     /// References a specific JetBrains IDE version (or implicit unbounded range).
     /// </summary>
-    [Owned]
+    [PublicAPI, Owned]
     public class IDEVersion : IComparable<IDEVersion>, IComparable, IEquatable<IDEVersion>
     {
         /// <summary>
