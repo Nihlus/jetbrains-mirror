@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
@@ -131,6 +132,54 @@ namespace JetBrains.Plugins.Models.API.XML
         [CanBeNull]
         [XmlAttribute(AttributeName = "updatedDate")]
         public string UpdateDate { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdeaPlugin"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by XmlSerializer.")]
+        protected IdeaPlugin()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdeaPlugin"/> class.
+        /// </summary>
+        /// <param name="name">The name of the plugin.</param>
+        /// <param name="id">The unique ID of the plugin.</param>
+        /// <param name="description">The description of the plugin.</param>
+        /// <param name="version">The version of the plugin.</param>
+        /// <param name="vendor">The plugin's vendor.</param>
+        /// <param name="ideaVersion">The IDE version the plugin is compatible with.</param>
+        /// <param name="changeNotes">The changelog for this release.</param>
+        public IdeaPlugin
+        (
+            string name,
+            string id,
+            string description,
+            string version,
+            Vendor vendor,
+            IdeaVersion ideaVersion,
+            string changeNotes
+        )
+        {
+            this.Name = name;
+            this.ID = id;
+            this.Description = description;
+            this.Version = version;
+            this.Vendor = vendor;
+            this.IdeaVersion = ideaVersion;
+            this.ChangeNotes = changeNotes;
+
+            this.Depends = new List<string>();
+            this.Tags = string.Empty;
+            this.Rating = 0.0;
+            this.Downloads = 0;
+            this.Size = 0;
+            this.ProjectURL = string.Empty;
+            this.UploadDate = string.Empty;
+            this.UpdateDate = string.Empty;
+        }
 
         /// <summary>
         /// Gets a hash code that is unique to the ID-version combination of this plugin.
