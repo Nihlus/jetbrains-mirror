@@ -47,18 +47,20 @@ namespace JetBrains.Plugins.Import.Extensions
             [NotNull] Models.PluginCategory dbCategory
         )
         {
-            return new Plugin
-            {
-                Name = @this.Name,
-                Category = dbCategory,
-                Vendor = @this.Vendor.ToEntity(),
-                PluginID = @this.ID,
-                Description = @this.Description,
-                Tags = @this.Tags?.Split(';').ToList() ?? new List<string>(),
-                Rating = @this.Rating,
-                ProjectURL = @this.ProjectURL ?? string.Empty,
-                Releases = new List<PluginRelease>()
-            };
+            var result = new Plugin
+            (
+                @this.Name,
+                dbCategory,
+                @this.ID,
+                @this.Description,
+                @this.Vendor.ToEntity()
+            );
+
+            result.Tags = @this.Tags?.Split(';').ToList() ?? new List<string>();
+            result.Rating = @this.Rating;
+            result.ProjectURL = @this.ProjectURL ?? string.Empty;
+
+            return result;
         }
 
         /// <summary>

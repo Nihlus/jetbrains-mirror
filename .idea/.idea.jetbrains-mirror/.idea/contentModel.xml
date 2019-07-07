@@ -125,8 +125,8 @@
         <e p="JetBrains.Plugins.Models.csproj" t="IncludeRecursive" />
         <e p="JetBrains.Plugins.Models.csproj.DotSettings" t="Include" />
         <e p="Migrations" t="Include">
-          <e p="20190705155814_InitialCreate.Designer.cs" t="Include" />
-          <e p="20190705155814_InitialCreate.cs" t="Include" />
+          <e p="20190707161917_InitialCreate.Designer.cs" t="Include" />
+          <e p="20190707161917_InitialCreate.cs" t="Include" />
           <e p="PluginsDatabaseContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="PluginsDatabaseContext.cs" t="Include" />

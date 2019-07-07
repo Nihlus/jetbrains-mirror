@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Models
@@ -32,7 +33,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the name of the plugin.
         /// </summary>
         [Required, NotNull]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the category the plugin belongs to.
@@ -44,13 +45,13 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the unique plugin identifier.
         /// </summary>
         [Required, NotNull]
-        public string PluginID { get; set; } = string.Empty;
+        public string PluginID { get; set; }
 
         /// <summary>
         /// Gets or sets the description of the plugin.
         /// </summary>
         [Required, NotNull]
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the plugin vendor.
@@ -62,13 +63,13 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the list of released versions of this plugin.
         /// </summary>
         [Required, NotNull]
-        public List<PluginRelease> Releases { get; set; } = new List<PluginRelease>();
+        public List<PluginRelease> Releases { get; set; }
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
         [Required, NotNull]
-        public List<string> Tags { get; set; } = new List<string>();
+        public List<string> Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the community rating of the plugin.
@@ -81,5 +82,43 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         [Required, NotNull]
         public string ProjectURL { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plugin"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by EF Core.")]
+        protected Plugin()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plugin"/> class.
+        /// </summary>
+        /// <param name="name">The name of the plugin.</param>
+        /// <param name="category">The category that the plugin is in.</param>
+        /// <param name="pluginID">The unique ID of the plugin.</param>
+        /// <param name="description">The plugin's description.</param>
+        /// <param name="vendor">The plugin's vendor.</param>
+        public Plugin
+        (
+            string name,
+            PluginCategory category,
+            string pluginID,
+            string description,
+            Vendor vendor
+        )
+        {
+            this.Name = name;
+            this.Category = category;
+            this.PluginID = pluginID;
+            this.Description = description;
+            this.Vendor = vendor;
+
+            this.Releases = new List<PluginRelease>();
+            this.Tags = new List<string>();
+            this.Rating = 0.0;
+            this.ProjectURL = string.Empty;
+        }
     }
 }
