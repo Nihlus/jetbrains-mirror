@@ -30,7 +30,6 @@ using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Models.API.XML;
 using JetBrains.Plugins.Models.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using PluginCategory = JetBrains.Plugins.Models.API.XML.PluginCategory;
 
@@ -182,7 +181,6 @@ namespace JetBrains.Plugins.Import
             [NotNull] IdeaPlugin pluginRelease
         )
         {
-            /*
             var dbPlugin = await db.Plugins.FirstOrDefaultAsync(p => p.PluginID == pluginRelease.ID);
 
             var dbRelease = dbPlugin.Releases.FirstOrDefault(r => r.Version == pluginRelease.Version);
@@ -198,11 +196,14 @@ namespace JetBrains.Plugins.Import
 
                 var existingEntry = db.Entry(dbRelease);
                 existingEntry.CurrentValues.SetValues(newValues);
+
+                if (existingEntry.State == EntityState.Unchanged)
+                {
+                    return false;
+                }
             }
 
             return true;
-            */
-            return false;
         }
 
         private static async Task<bool> ImportPluginAsync
@@ -231,6 +232,11 @@ namespace JetBrains.Plugins.Import
 
                 var existingEntry = db.Entry(dbPlugin);
                 existingEntry.CurrentValues.SetValues(newValues);
+
+                if (existingEntry.State == EntityState.Unchanged)
+                {
+                    return false;
+                }
             }
 
             return true;
@@ -255,6 +261,11 @@ namespace JetBrains.Plugins.Import
 
                 var existingEntry = db.Entry(dbCategory);
                 existingEntry.CurrentValues.SetValues(newValues);
+
+                if (existingEntry.State == EntityState.Unchanged)
+                {
+                    return false;
+                }
             }
 
             return true;
