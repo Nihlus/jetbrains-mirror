@@ -317,7 +317,7 @@ namespace JetBrains.Plugins.Mirror
 
                     if (File.Exists(savePath))
                     {
-                        var expectedSize = data.Content.Headers?.ContentLength ?? (long)plugin.Size;
+                        var expectedSize = data.Content.Headers?.ContentLength ?? plugin.Size;
                         if (new FileInfo(savePath).Length == expectedSize)
                         {
                             // Looks like we already have this one
