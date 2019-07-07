@@ -108,16 +108,6 @@ namespace JetBrains.Plugins.Import.Extensions
                 UntilBuild = untilBuild
             };
 
-            var result = new PluginRelease
-            {
-                ChangeNotes = @this.ChangeNotes,
-                CompatibleWith = versionRange,
-                Downloads = @this.Downloads,
-                Plugin = dbPlugin,
-                UploadedAt = ParseDateFromMilliseconds(@this.UpdateDate),
-                Dependencies = @this.Depends ?? new List<string>()
-            };
-
             // Get the file size and hash
             // TODO: refactor
             var basePath = Program.Options.InputFolder;
@@ -127,7 +117,7 @@ namespace JetBrains.Plugins.Import.Extensions
                 "plugins",
                 dbPlugin.Category.Name.GenerateSlug(),
                 dbPlugin.Name.GenerateSlug(),
-                result.Version
+                @this.Version
             );
 
             var pluginFile = Directory.EnumerateFiles(pluginFolder).FirstOrDefault();
@@ -136,17 +126,30 @@ namespace JetBrains.Plugins.Import.Extensions
                 throw new FileNotFoundException("Couldn't find the released plugin file. Missing data?");
             }
 
+            string hash;
             using (var md5 = MD5.Create())
             {
                 using (var file = File.OpenRead(pluginFile))
                 {
                     var md5Sum = md5.ComputeHash(file);
-                    result.Hash = BitConverter.ToString(md5Sum).Replace("-", string.Empty).ToLowerInvariant();
+                    hash = BitConverter.ToString(md5Sum).Replace("-", string.Empty).ToLowerInvariant();
                 }
             }
 
             var fileInfo = new FileInfo(pluginFile);
-            result.Size = fileInfo.Length;
+            var size = fileInfo.Length;
+
+            var result = new PluginRelease
+            (
+                dbPlugin,
+                @this.ChangeNotes,
+                size,
+                ParseDateFromMilliseconds(@this.UpdateDate),
+                hash,
+                @this.Version,
+                versionRange,
+                @this.Depends
+            );
 
             return result;
         }

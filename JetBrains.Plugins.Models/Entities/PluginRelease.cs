@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Models
@@ -39,7 +40,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the change notes for this release.
         /// </summary>
         [Required, NotNull]
-        public string ChangeNotes { get; set; } = string.Empty;
+        public string ChangeNotes { get; set; }
 
         /// <summary>
         /// Gets or sets the number of times this release has been downloaded.
@@ -63,14 +64,14 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the MD5 hash of the file associated with this release.
         /// </summary>
         [Required, NotNull]
-        public string Hash { get; set; } = string.Empty;
+        public string Hash { get; set; }
 
         /// <summary>
         /// Gets or sets the version of this release. This field, while typically semver, can follow a variety of
         /// loosely defined formats.
         /// </summary>
         [Required, NotNull]
-        public string Version { get; set; } = string.Empty;
+        public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets the range of IDE builds that this release is compatible with.
@@ -81,7 +82,53 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the list of plugin IDs that this plugin depends on.
         /// </summary>
-        [NotNull]
-        public List<string> Dependencies { get; set; } = new List<string>();
+        /// <remarks>This list can be empty.</remarks>
+        [Required, NotNull]
+        public List<string> Dependencies { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginRelease"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by EF Core.")]
+        protected PluginRelease()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginRelease"/> class.
+        /// </summary>
+        /// <param name="plugin">The plugin that this release is of.</param>
+        /// <param name="changeNotes">The changelog of this release.</param>
+        /// <param name="size">The size (in bytes) of the release file.</param>
+        /// <param name="uploadedAt">The time at which the release was uploaded.</param>
+        /// <param name="hash">The MD5 hash of the release file.</param>
+        /// <param name="version">The version of this release.</param>
+        /// <param name="compatibleWith">The IDE versions this release is compatible with.</param>
+        /// <param name="dependencies">The dependencies of this release.</param>
+        public PluginRelease
+        (
+            Plugin plugin,
+            string changeNotes,
+            long size,
+            DateTime uploadedAt,
+            string hash,
+            string version,
+            IDEVersionRange compatibleWith,
+            List<string> dependencies = null
+        )
+        {
+            dependencies = dependencies ?? new List<string>();
+
+            this.Plugin = plugin;
+            this.ChangeNotes = changeNotes;
+            this.Size = size;
+            this.UploadedAt = uploadedAt;
+            this.Hash = hash;
+            this.Version = version;
+            this.CompatibleWith = compatibleWith;
+
+            this.Dependencies = dependencies;
+        }
     }
 }
