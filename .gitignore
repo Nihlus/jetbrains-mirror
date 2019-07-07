@@ -475,3 +475,5 @@ plugins/
 
 ### Secrets
 db.auth
+
+!.idea/
