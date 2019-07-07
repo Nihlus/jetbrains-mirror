@@ -50,7 +50,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// Initializes a new instance of the <see cref="PluginRepository"/> class.
         /// </summary>
         /// <param name="categories">The categories in the repository.</param>
-        public PluginRepository(List<PluginCategory> categories = null)
+        public PluginRepository([CanBeNull] List<PluginCategory> categories = null)
         {
             this.Categories = categories ?? new List<PluginCategory>();
         }

@@ -54,7 +54,7 @@ namespace JetBrains.Plugins.Models
         /// Initializes a new instance of the <see cref="PluginCategory"/> class.
         /// </summary>
         /// <param name="name">The name of the category.</param>
-        public PluginCategory(string name)
+        public PluginCategory([NotNull] string name)
         {
             this.Name = name;
 

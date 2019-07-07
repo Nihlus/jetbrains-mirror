@@ -108,14 +108,14 @@ namespace JetBrains.Plugins.Models
         /// <param name="dependencies">The dependencies of this release.</param>
         public PluginRelease
         (
-            Plugin plugin,
-            string changeNotes,
+            [NotNull] Plugin plugin,
+            [NotNull] string changeNotes,
             long size,
             DateTime uploadedAt,
-            string hash,
-            string version,
-            IDEVersionRange compatibleWith,
-            List<string> dependencies = null
+            [NotNull] string hash,
+            [NotNull] string version,
+            [NotNull] IDEVersionRange compatibleWith,
+            [CanBeNull] List<string> dependencies = null
         )
         {
             dependencies = dependencies ?? new List<string>();

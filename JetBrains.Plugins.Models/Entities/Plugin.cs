@@ -102,11 +102,11 @@ namespace JetBrains.Plugins.Models
         /// <param name="vendor">The plugin's vendor.</param>
         public Plugin
         (
-            string name,
-            PluginCategory category,
-            string pluginID,
-            string description,
-            Vendor vendor
+            [NotNull] string name,
+            [NotNull] PluginCategory category,
+            [NotNull] string pluginID,
+            [NotNull] string description,
+            [NotNull] Vendor vendor
         )
         {
             this.Name = name;

@@ -58,7 +58,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         /// <param name="name">The name of the category.</param>
         /// <param name="plugins">The plugins in the category.</param>
-        public PluginCategory(string name, List<IdeaPlugin> plugins = null)
+        public PluginCategory([NotNull] string name, [CanBeNull] List<IdeaPlugin> plugins = null)
         {
             plugins = plugins ?? new List<IdeaPlugin>();
 

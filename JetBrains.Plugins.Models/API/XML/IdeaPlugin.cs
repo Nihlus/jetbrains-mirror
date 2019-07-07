@@ -154,13 +154,13 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <param name="changeNotes">The changelog for this release.</param>
         public IdeaPlugin
         (
-            string name,
-            string id,
-            string description,
-            string version,
-            Vendor vendor,
-            IdeaVersion ideaVersion,
-            string changeNotes
+            [NotNull] string name,
+            [NotNull] string id,
+            [NotNull] string description,
+            [NotNull] string version,
+            [NotNull] Vendor vendor,
+            [NotNull] IdeaVersion ideaVersion,
+            [NotNull] string changeNotes
         )
         {
             this.Name = name;
