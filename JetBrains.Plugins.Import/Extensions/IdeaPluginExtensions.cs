@@ -19,8 +19,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using JetBrains.Annotations;
+using JetBrains.Plugins.Import.Helpers;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Models.API.XML;
 
@@ -56,6 +59,94 @@ namespace JetBrains.Plugins.Import.Extensions
                 ProjectURL = @this.ProjectURL ?? string.Empty,
                 Releases = new List<PluginRelease>()
             };
+        }
+
+        /// <summary>
+        /// Maps the given <see cref="IdeaPlugin"/> to a <see cref="PluginRelease"/>.
+        /// </summary>
+        /// <param name="this">The IdeaPlugin.</param>
+        /// <param name="dbPlugin">The plugin that the release belongs to.</param>
+        /// <returns>The mapped release.</returns>
+        [NotNull]
+        public static PluginRelease ToReleaseEntity
+        (
+            [NotNull] this IdeaPlugin @this,
+            [NotNull] Plugin dbPlugin
+        )
+        {
+            DateTime ParseDateFromMilliseconds(string value)
+            {
+                var millis = long.Parse(value);
+                return DateTimeOffset.FromUnixTimeMilliseconds(millis).UtcDateTime;
+            }
+
+            var sinceBuildValue = @this.IdeaVersion.Min ?? @this.IdeaVersion.SinceBuild;
+            IDEVersion sinceBuild = null;
+            if (!(sinceBuildValue is null))
+            {
+                if (!IDEVersion.TryParse(sinceBuildValue, out sinceBuild))
+                {
+                    throw new InvalidDataException("Bad version string.");
+                }
+            }
+
+            var untilBuildValue = @this.IdeaVersion.Max ?? @this.IdeaVersion.UntilBuild;
+            IDEVersion untilBuild = null;
+            if (!(untilBuildValue is null))
+            {
+                if (!IDEVersion.TryParse(untilBuildValue, out untilBuild))
+                {
+                    throw new InvalidDataException("Bad version string.");
+                }
+            }
+
+            var versionRange = new IDEVersionRange
+            {
+                SinceBuild = sinceBuild,
+                UntilBuild = untilBuild
+            };
+
+            var result = new PluginRelease
+            {
+                ChangeNotes = @this.ChangeNotes,
+                CompatibleWith = versionRange,
+                Downloads = @this.Downloads,
+                Plugin = dbPlugin,
+                UploadedAt = ParseDateFromMilliseconds(@this.UpdateDate),
+                Dependencies = @this.Depends ?? new List<string>()
+            };
+
+            // Get the file size and hash
+            // TODO: refactor
+            var basePath = Program.Options.InputFolder;
+            var pluginFolder = Path.Combine
+            (
+                basePath,
+                "plugins",
+                dbPlugin.Category.Name.GenerateSlug(),
+                dbPlugin.Name.GenerateSlug(),
+                result.Version
+            );
+
+            var pluginFile = Directory.EnumerateFiles(pluginFolder).FirstOrDefault();
+            if (pluginFile is null)
+            {
+                throw new FileNotFoundException("Couldn't find the released plugin file. Missing data?");
+            }
+
+            using (var md5 = MD5.Create())
+            {
+                using (var file = File.OpenRead(pluginFile))
+                {
+                    var md5Sum = md5.ComputeHash(file);
+                    result.Hash = BitConverter.ToString(md5Sum).Replace("-", string.Empty).ToLowerInvariant();
+                }
+            }
+
+            var fileInfo = new FileInfo(pluginFile);
+            result.Size = fileInfo.Length;
+
+            return result;
         }
     }
 }
