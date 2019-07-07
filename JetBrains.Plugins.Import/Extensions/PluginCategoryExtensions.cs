@@ -17,9 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.Plugins.Models;
 using PluginCategory = JetBrains.Plugins.Models.API.XML.PluginCategory;
 
 namespace JetBrains.Plugins.Import.Extensions

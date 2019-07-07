@@ -116,7 +116,6 @@
           </e>
           <e p="Plugin.cs" t="Include" />
           <e p="PluginCategory.cs" t="Include" />
-          <e p="PluginDependency.cs" t="Include" />
           <e p="PluginRelease.cs" t="Include" />
         </e>
         <e p="Interfaces" t="Include">
