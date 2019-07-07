@@ -85,8 +85,14 @@ namespace JetBrains.Plugins.Models.PostgreSQL
             this.Username = username ?? throw new ArgumentNullException(nameof(username));
             this.Password = password ?? throw new ArgumentNullException(nameof(password));
 
-            this.ConnectionString =
-                $"Host={host};Port={port};Database={database};Username={username};Password={password}";
+            this.ConnectionString = $"Host={host};" +
+                                    $"Port={port};" +
+                                    $"Database={database};" +
+                                    $"Username={username};" +
+                                    $"Password={password};" +
+                                    $"Pooling=true;" +
+                                    $"Minimum Pool Size=1;" +
+                                    $"Maximum Pool Size=75";
         }
 
         /// <summary>
