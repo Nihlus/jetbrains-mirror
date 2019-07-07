@@ -63,7 +63,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [Required, NotNull]
         [XmlElement(ElementName = "vendor")]
-        public Vendor Vendor { get; set; }
+        public IdeaVendor Vendor { get; set; }
 
         /// <summary>
         /// Gets or sets the IDEA versions that the plugin supports.
@@ -158,7 +158,7 @@ namespace JetBrains.Plugins.Models.API.XML
             [NotNull] string id,
             [NotNull] string description,
             [NotNull] string version,
-            [NotNull] Vendor vendor,
+            [NotNull] IdeaVendor vendor,
             [NotNull] IdeaVersion ideaVersion,
             [NotNull] string changeNotes
         )

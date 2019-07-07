@@ -31,7 +31,6 @@ using JetBrains.Plugins.Models.API.XML;
 using JetBrains.Plugins.Models.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PluginCategory = JetBrains.Plugins.Models.API.XML.PluginCategory;
 
 namespace JetBrains.Plugins.Import
 {
@@ -90,12 +89,12 @@ namespace JetBrains.Plugins.Import
                 return 1;
             }
 
-            var deserializer = new XmlSerializer(typeof(PluginRepository));
+            var deserializer = new XmlSerializer(typeof(IdeaPluginRepository));
 
-            PluginRepository repository;
+            IdeaPluginRepository repository;
             using (var repoFile = File.OpenRead(repoFilePath))
             {
-                repository = (PluginRepository)deserializer.Deserialize(repoFile);
+                repository = (IdeaPluginRepository)deserializer.Deserialize(repoFile);
             }
 
             using (var services = new ServiceCollection()
@@ -108,7 +107,7 @@ namespace JetBrains.Plugins.Import
             return 0;
         }
 
-        private static async Task ImportRepositoryAsync([NotNull] IServiceProvider services, [NotNull] PluginRepository repository)
+        private static async Task ImportRepositoryAsync([NotNull] IServiceProvider services, [NotNull] IdeaPluginRepository repository)
         {
             async Task ImportPluginReleaseScoped(IdeaPlugin pluginRelease)
             {
@@ -123,7 +122,7 @@ namespace JetBrains.Plugins.Import
                 }
             }
 
-            async Task ImportPluginScopedAsync(IdeaPlugin pluginDefinition, PluginCategory category)
+            async Task ImportPluginScopedAsync(IdeaPlugin pluginDefinition, IdeaPluginCategory category)
             {
                 using (var scope = services.CreateScope())
                 {
@@ -135,7 +134,7 @@ namespace JetBrains.Plugins.Import
                 }
             }
 
-            async Task ImportCategoryScopedAsync(PluginCategory category)
+            async Task ImportCategoryScopedAsync(IdeaPluginCategory category)
             {
                 using (var scope = services.CreateScope())
                 {
@@ -210,7 +209,7 @@ namespace JetBrains.Plugins.Import
         (
             [NotNull] PluginsDatabaseContext db,
             [NotNull] IdeaPlugin plugin,
-            [NotNull] PluginCategory category
+            [NotNull] IdeaPluginCategory category
         )
         {
             var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);
@@ -245,7 +244,7 @@ namespace JetBrains.Plugins.Import
         private static async Task<bool> ImportCategoryAsync
         (
             [NotNull] PluginsDatabaseContext db,
-            [NotNull] PluginCategory category
+            [NotNull] IdeaPluginCategory category
         )
         {
             var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);

@@ -55,7 +55,7 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="repository">The repository to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoryAsync([NotNull] PluginRepository repository, CancellationToken ct)
+        public async Task MirrorRepositoryAsync([NotNull] IdeaPluginRepository repository, CancellationToken ct)
         {
             var totalSize = new ByteSize
             (
@@ -142,11 +142,11 @@ namespace JetBrains.Plugins.Mirror
                 return (categoryName, results);
             }));
 
-            var mirroredRepository = new PluginRepository();
+            var mirroredRepository = new IdeaPluginRepository();
             foreach (var (categoryName, downloadResults) in categoryResults)
             {
                 var category = mirroredRepository.Categories.FirstOrDefault(c => c.Name == categoryName) ??
-                               new PluginCategory(categoryName);
+                               new IdeaPluginCategory(categoryName);
                 if (!mirroredRepository.Categories.Contains(category))
                 {
                     mirroredRepository.Categories.Add(category);
@@ -155,7 +155,7 @@ namespace JetBrains.Plugins.Mirror
                 category.Plugins.AddRange(downloadResults.Where(r => r.IsSuccess).Select(r => r.Plugin));
             }
 
-            var serializer = new XmlSerializer(typeof(PluginRepository));
+            var serializer = new XmlSerializer(typeof(IdeaPluginRepository));
             using (var output = File.OpenWrite(Path.Combine(baseDirectory, "repository.xml")))
             {
                 serializer.Serialize(output, mirroredRepository);
@@ -170,7 +170,7 @@ namespace JetBrains.Plugins.Mirror
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task MirrorRepositoriesAsync([NotNull] IEnumerable<string> productVersions, CancellationToken ct)
         {
-            var repositories = new List<PluginRepository>();
+            var repositories = new List<IdeaPluginRepository>();
             foreach (var productVersion in productVersions)
             {
                 repositories.Add(await _api.ListPluginsAsync(productVersion, ct));
@@ -186,7 +186,7 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="repositories">The repositories to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoriesAsync([NotNull] IReadOnlyCollection<PluginRepository> repositories, CancellationToken ct)
+        public async Task MirrorRepositoriesAsync([NotNull] IReadOnlyCollection<IdeaPluginRepository> repositories, CancellationToken ct)
         {
             await Console.Out.WriteLineAsync("Merging requested versioned repositories (this might take a while)...");
 
@@ -220,14 +220,14 @@ namespace JetBrains.Plugins.Mirror
             var mergedCategories = newCategories.Select
             (
                 kvp =>
-                    new PluginCategory
+                    new IdeaPluginCategory
                     (
                         kvp.Key,
                         kvp.Value.Values.ToList()
                     )
             );
 
-            var mergedRepository = new PluginRepository(mergedCategories.ToList());
+            var mergedRepository = new IdeaPluginRepository(mergedCategories.ToList());
 
             await MirrorRepositoryAsync(mergedRepository, ct);
         }

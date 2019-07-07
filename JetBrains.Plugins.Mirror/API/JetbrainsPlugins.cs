@@ -43,7 +43,7 @@ namespace JetBrains.Plugins.Mirror.API
 
         static JetbrainsPlugins()
         {
-            RepositorySerializer = new XmlSerializer(typeof(PluginRepository));
+            RepositorySerializer = new XmlSerializer(typeof(IdeaPluginRepository));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace JetBrains.Plugins.Mirror.API
         /// <param name="productBuild">The product to list the plugins for.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The repository object representing the plugins available for the given product.</returns>
-        public async Task<PluginRepository> ListPluginsAsync(string productBuild, CancellationToken ct)
+        public async Task<IdeaPluginRepository> ListPluginsAsync(string productBuild, CancellationToken ct)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query[Endpoints.PluginList.Parameters.Build] = productBuild;
@@ -78,7 +78,7 @@ namespace JetBrains.Plugins.Mirror.API
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    return (PluginRepository)RepositorySerializer.Deserialize(stream);
+                    return (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace JetBrains.Plugins.Mirror.API
             {
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    var repository = (PluginRepository)RepositorySerializer.Deserialize(stream);
+                    var repository = (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
                     return repository.Categories.SelectMany(c => c.Plugins).ToList();
                 }
             }

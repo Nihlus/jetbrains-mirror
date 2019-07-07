@@ -1,5 +1,5 @@
 //
-//  PluginCategory.cs
+//  IdeaPluginRepository.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -18,7 +18,6 @@
 //
 
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
@@ -26,51 +25,34 @@ using JetBrains.Annotations;
 namespace JetBrains.Plugins.Models.API.XML
 {
     /// <summary>
-    /// Represents a category of plugins.
+    /// Represents an information listing about the official JetBrains plugin repository.
     /// </summary>
-    public class PluginCategory
+    [XmlRoot(ElementName = "plugin-repository")]
+    public class IdeaPluginRepository
     {
         /// <summary>
-        /// Gets or sets the name of the category.
-        /// </summary>
-        [Required, NotNull]
-        [XmlAttribute(AttributeName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of plugins in the category.
+        /// Gets or sets the categories in the repository.
         /// </summary>
         [NotNull]
-        [XmlElement(ElementName = "idea-plugin")]
-        public List<IdeaPlugin> Plugins { get; set; }
+        [XmlElement(ElementName = "category")]
+        public List<IdeaPluginCategory> Categories { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// Initializes a new instance of the <see cref="IdeaPluginRepository"/> class.
         /// </summary>
         [UsedImplicitly]
         [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by XmlSerializer.")]
-        protected PluginCategory()
+        protected IdeaPluginRepository()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// Initializes a new instance of the <see cref="IdeaPluginRepository"/> class.
         /// </summary>
-        /// <param name="name">The name of the category.</param>
-        /// <param name="plugins">The plugins in the category.</param>
-        public PluginCategory([NotNull] string name, [CanBeNull] List<IdeaPlugin> plugins = null)
+        /// <param name="categories">The categories in the repository.</param>
+        public IdeaPluginRepository([CanBeNull] List<IdeaPluginCategory> categories = null)
         {
-            plugins = plugins ?? new List<IdeaPlugin>();
-
-            this.Name = name;
-            this.Plugins = plugins;
-        }
-
-        /// <inheritdoc />
-        [NotNull]
-        public override string ToString()
-        {
-            return $"{this.Name} ({this.Plugins.Count} plugins)";
+            this.Categories = categories ?? new List<IdeaPluginCategory>();
         }
     }
 }

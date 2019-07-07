@@ -99,10 +99,10 @@
         <e p="API" t="Include">
           <e p="XML" t="Include">
             <e p="IdeaPlugin.cs" t="Include" />
+            <e p="IdeaPluginCategory.cs" t="Include" />
+            <e p="IdeaPluginRepository.cs" t="Include" />
+            <e p="IdeaVendor.cs" t="Include" />
             <e p="IdeaVersion.cs" t="Include" />
-            <e p="PluginCategory.cs" t="Include" />
-            <e p="PluginRepository.cs" t="Include" />
-            <e p="Vendor.cs" t="Include" />
           </e>
         </e>
         <e p="Bases" t="Include">

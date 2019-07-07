@@ -18,22 +18,22 @@
 //
 
 using JetBrains.Annotations;
-using PluginCategory = JetBrains.Plugins.Models.API.XML.PluginCategory;
+using JetBrains.Plugins.Models.API.XML;
 
 namespace JetBrains.Plugins.Import.Extensions
 {
     /// <summary>
-    /// Extensions methods for the <see cref="PluginCategory"/> class.
+    /// Extensions methods for the <see cref="IdeaPluginCategory"/> class.
     /// </summary>
     public static class PluginCategoryExtensions
     {
         /// <summary>
-        /// Maps the given <see cref="PluginCategory"/> to a <see cref="Models.PluginCategory"/>.
+        /// Maps the given <see cref="IdeaPluginCategory"/> to a <see cref="Models.PluginCategory"/>.
         /// </summary>
         /// <param name="this">The category.</param>
         /// <returns>The mapped category.</returns>
         [NotNull]
-        public static Models.PluginCategory ToEntity([NotNull] this PluginCategory @this)
+        public static Models.PluginCategory ToEntity([NotNull] this IdeaPluginCategory @this)
         {
             return new Models.PluginCategory(@this.Name);
         }

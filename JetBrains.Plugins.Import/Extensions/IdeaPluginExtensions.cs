@@ -44,7 +44,7 @@ namespace JetBrains.Plugins.Import.Extensions
         public static Plugin ToEntity
         (
             [NotNull] this IdeaPlugin @this,
-            [NotNull] Models.PluginCategory dbCategory
+            [NotNull] PluginCategory dbCategory
         )
         {
             var result = new Plugin

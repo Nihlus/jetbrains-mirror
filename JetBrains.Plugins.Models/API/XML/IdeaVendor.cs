@@ -1,5 +1,5 @@
 //
-//  Vendor.cs
+//  IdeaVendor.cs
 //
 //  Copyright (c) 2019 Firwood Software
 //
@@ -25,7 +25,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// <summary>
     /// Represents a plugin vendor.
     /// </summary>
-    public class Vendor
+    public class IdeaVendor
     {
         /// <summary>
         /// Gets or sets the vendor's URL.

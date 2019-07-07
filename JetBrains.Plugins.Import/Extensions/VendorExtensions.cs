@@ -23,17 +23,17 @@ using JetBrains.Plugins.Models.API.XML;
 namespace JetBrains.Plugins.Import.Extensions
 {
     /// <summary>
-    /// Extensions methods for the <see cref="PluginCategory"/> class.
+    /// Extensions methods for the <see cref="IdeaPluginCategory"/> class.
     /// </summary>
     public static class VendorExtensions
     {
         /// <summary>
-        /// Maps the given <see cref="PluginCategory"/> to a <see cref="Models.PluginCategory"/>.
+        /// Maps the given <see cref="IdeaPluginCategory"/> to a <see cref="Models.PluginCategory"/>.
         /// </summary>
         /// <param name="this">The category.</param>
         /// <returns>The mapped category.</returns>
         [NotNull]
-        public static Models.Vendor ToEntity([NotNull] this Vendor @this)
+        public static Models.Vendor ToEntity([NotNull] this IdeaVendor @this)
         {
             return new Models.Vendor
             {
