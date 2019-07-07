@@ -37,11 +37,7 @@ namespace JetBrains.Plugins.Import.Extensions
         [NotNull]
         public static Models.PluginCategory ToEntity([NotNull] this PluginCategory @this)
         {
-            return new Models.PluginCategory
-            {
-                Name = @this.Name,
-                Plugins = new List<Plugin>()
-            };
+            return new Models.PluginCategory(@this.Name);
         }
     }
 }

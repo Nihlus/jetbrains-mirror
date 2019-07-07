@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Models
@@ -32,12 +33,32 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the name of the category.
         /// </summary>
         [Required, NotNull]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugins in this category.
         /// </summary>
         [Required, NotNull]
-        public List<Plugin> Plugins { get; set; } = new List<Plugin>();
+        public List<Plugin> Plugins { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by EF Core.")]
+        protected PluginCategory()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginCategory"/> class.
+        /// </summary>
+        /// <param name="name">The name of the category.</param>
+        public PluginCategory(string name)
+        {
+            this.Name = name;
+
+            this.Plugins = new List<Plugin>();
+        }
     }
 }
