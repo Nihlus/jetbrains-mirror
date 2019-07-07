@@ -21,14 +21,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace JetBrains.Plugins.Models
 {
     /// <summary>
-    /// References a specific JetBrains IDE version (or implict unbounded range).
+    /// References a specific JetBrains IDE version (or implicit unbounded range).
     /// </summary>
     [Owned]
     public class IDEVersion : IComparable<IDEVersion>, IComparable, IEquatable<IDEVersion>
@@ -57,6 +59,86 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         [NotNull]
         public List<int> Extra { get; set; } = new List<int>();
+
+        /// <summary>
+        /// Parses an <see cref="IDEVersion"/> from the given string.
+        /// </summary>
+        /// <param name="value">The value to parse.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the value was successfully parsed; otherwise, false.</returns>
+        [Pure]
+        public static bool TryParse(string value, out IDEVersion result)
+        {
+            int ParseBuildNumber(string buildComponent)
+            {
+                if (buildComponent.Length == 1 && buildComponent[0] == '*')
+                {
+                    return -1;
+                }
+
+                if (!int.TryParse(buildComponent, out var component))
+                {
+                    throw new InvalidDataException("Failed to parse a build number component.");
+                }
+
+                return component;
+            }
+
+            result = null;
+
+            if (value == "n/a")
+            {
+                return true;
+            }
+
+            string productCode = null;
+            var branch = 0;
+            int? build = null;
+
+            var productSeparator = value.IndexOf('-');
+            if (productSeparator > 0)
+            {
+                productCode = value.Substring(0, productSeparator);
+                value = value.Substring(productSeparator + 1);
+            }
+
+            var components = value.Split('.');
+
+            var extra = new List<int>();
+            for (var i = 0; i < components.Length; ++i)
+            {
+                switch (i)
+                {
+                    case 0:
+                    {
+                        branch = ParseBuildNumber(components[i]);
+                        break;
+                    }
+
+                    case 1:
+                    {
+                        build = ParseBuildNumber(components[i]);
+                        break;
+                    }
+
+                    default:
+                    {
+                        extra.Add(ParseBuildNumber(components[i]));
+                        break;
+                    }
+                }
+            }
+
+            result = new IDEVersion
+            {
+                ProductID = productCode,
+                Branch = branch,
+                Build = build,
+                Extra = extra
+            };
+
+            return true;
+        }
 
         /// <inheritdoc/>
         public bool Equals([CanBeNull] IDEVersion other)
@@ -247,6 +329,57 @@ namespace JetBrains.Plugins.Models
         public static bool operator !=([CanBeNull] IDEVersion left, [CanBeNull] IDEVersion right)
         {
             return !Equals(left, right);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            string ToVersionComponent(int value)
+            {
+                if (value < 0)
+                {
+                    return "*";
+                }
+
+                return value.ToString();
+            }
+
+            var sb = new StringBuilder();
+
+            if (!(this.ProductID is null))
+            {
+                sb.Append(this.ProductID);
+                sb.Append('-');
+            }
+
+            sb.Append(ToVersionComponent(this.Branch));
+            if (sb[sb.Length] == '*')
+            {
+                return sb.ToString();
+            }
+
+            if (!(this.Build is null))
+            {
+                sb.Append('.');
+                sb.Append(ToVersionComponent(this.Build.Value));
+                if (sb[sb.Length] == '*')
+                {
+                    return sb.ToString();
+                }
+            }
+
+            foreach (var extra in this.Extra)
+            {
+                sb.Append('.');
+                sb.Append(ToVersionComponent(extra));
+
+                if (sb[sb.Length] == '*')
+                {
+                    return sb.ToString();
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
