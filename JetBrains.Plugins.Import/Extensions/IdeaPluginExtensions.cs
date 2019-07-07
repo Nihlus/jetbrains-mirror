@@ -76,13 +76,33 @@ namespace JetBrains.Plugins.Import.Extensions
             [NotNull] Plugin dbPlugin
         )
         {
+            string SelectBestSinceValue(IdeaVersion version)
+            {
+                if (version.SinceBuild is null || version.SinceBuild == "n/a")
+                {
+                    return version.Min;
+                }
+
+                return version.SinceBuild;
+            }
+
+            string SelectBestUntilValue(IdeaVersion version)
+            {
+                if (version.UntilBuild is null || version.UntilBuild == "n/a")
+                {
+                    return version.Max;
+                }
+
+                return version.UntilBuild;
+            }
+
             DateTime ParseDateFromMilliseconds(string value)
             {
                 var millis = long.Parse(value);
                 return DateTimeOffset.FromUnixTimeMilliseconds(millis).UtcDateTime;
             }
 
-            var sinceBuildValue = @this.IdeaVersion.Min ?? @this.IdeaVersion.SinceBuild;
+            var sinceBuildValue = SelectBestSinceValue(@this.IdeaVersion);
             IDEVersion sinceBuild = null;
             if (!(sinceBuildValue is null))
             {
@@ -92,7 +112,7 @@ namespace JetBrains.Plugins.Import.Extensions
                 }
             }
 
-            var untilBuildValue = @this.IdeaVersion.Max ?? @this.IdeaVersion.UntilBuild;
+            var untilBuildValue = SelectBestUntilValue(@this.IdeaVersion);
             IDEVersion untilBuild = null;
             if (!(untilBuildValue is null))
             {
