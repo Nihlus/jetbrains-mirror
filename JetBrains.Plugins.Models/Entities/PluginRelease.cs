@@ -45,13 +45,13 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the number of times this release has been downloaded.
         /// </summary>
         [Required]
-        public ulong Downloads { get; set; }
+        public long Downloads { get; set; }
 
         /// <summary>
         /// Gets or sets the size (in bytes) of the plugin.
         /// </summary>
         [Required]
-        public ulong Size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// Gets or sets the time at which this release was uploaded.
@@ -63,13 +63,14 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the MD5 hash of the file associated with this release.
         /// </summary>
         [Required, NotNull]
-        public string Hash { get; set; }
+        public string Hash { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the version of this release.
+        /// Gets or sets the version of this release. This field, while typically semver, can follow a variety of
+        /// loosely defined formats.
         /// </summary>
         [Required, NotNull]
-        public PluginVersion Version { get; set; }
+        public string Version { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the range of IDE builds that this release is compatible with.
@@ -78,9 +79,9 @@ namespace JetBrains.Plugins.Models
         public IDEVersionRange CompatibleWith { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of plugins that this plugin depends on.
+        /// Gets or sets the list of plugin IDs that this plugin depends on.
         /// </summary>
         [NotNull]
-        public List<PluginDependency> Dependencies { get; set; } = new List<PluginDependency>();
+        public List<string> Dependencies { get; set; } = new List<string>();
     }
 }
