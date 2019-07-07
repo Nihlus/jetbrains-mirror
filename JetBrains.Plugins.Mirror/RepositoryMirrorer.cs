@@ -227,10 +227,7 @@ namespace JetBrains.Plugins.Mirror
                     )
             );
 
-            var mergedRepository = new PluginRepository
-            {
-                Categories = mergedCategories.ToList()
-            };
+            var mergedRepository = new PluginRepository(mergedCategories.ToList());
 
             await MirrorRepositoryAsync(mergedRepository, ct);
         }

@@ -18,6 +18,7 @@
 //
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
@@ -34,6 +35,24 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [NotNull]
         [XmlElement(ElementName = "category")]
-        public List<PluginCategory> Categories { get; set; } = new List<PluginCategory>();
+        public List<PluginCategory> Categories { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginRepository"/> class.
+        /// </summary>
+        [UsedImplicitly]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized", Justification = "Initialized by XmlSerializer.")]
+        protected PluginRepository()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginRepository"/> class.
+        /// </summary>
+        /// <param name="categories">The categories in the repository.</param>
+        public PluginRepository(List<PluginCategory> categories = null)
+        {
+            this.Categories = categories ?? new List<PluginCategory>();
+        }
     }
 }
