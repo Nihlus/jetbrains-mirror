@@ -103,13 +103,13 @@ namespace JetBrains.Plugins.Models.API.XML
         /// Gets or sets the number of downloads that this plugin has had.
         /// </summary>
         [XmlAttribute(AttributeName = "downloads")]
-        public ulong Downloads { get; set; }
+        public long Downloads { get; set; }
 
         /// <summary>
         /// Gets or sets the size in bytes of the plugin.
         /// </summary>
         [XmlAttribute(AttributeName = "size")]
-        public ulong Size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// Gets or sets the project URL of the plugin.
