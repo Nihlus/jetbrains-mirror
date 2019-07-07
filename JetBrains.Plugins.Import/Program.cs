@@ -98,7 +98,12 @@ namespace JetBrains.Plugins.Import
             }
 
             using (var services = new ServiceCollection()
-                .AddDbContextPool<PluginsDatabaseContext>(options => options.UseNpgsql(passfile.ConnectionString))
+                .AddDbContextPool<PluginsDatabaseContext>
+                (
+                    options => PluginsDatabaseContext
+                        .ConfigureDefaultOptions(options)
+                        .UseNpgsql(passfile.ConnectionString)
+                )
                 .BuildServiceProvider())
             {
                 await ImportRepositoryAsync(services, repository);

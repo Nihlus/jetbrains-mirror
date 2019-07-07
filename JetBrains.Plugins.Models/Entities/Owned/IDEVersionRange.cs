@@ -33,13 +33,13 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the lower inclusive bound of the compatibility range.
         /// </summary>
         [CanBeNull]
-        public IDEVersion SinceBuild { get; set; }
+        public virtual IDEVersion SinceBuild { get; set; }
 
         /// <summary>
         /// Gets or sets the upper exclusive bound of the compatibility range.
         /// </summary>
         [CanBeNull]
-        public IDEVersion UntilBuild { get; set; }
+        public virtual IDEVersion UntilBuild { get; set; }
 
         /// <summary>
         /// Determines whether the given version is within with the range.

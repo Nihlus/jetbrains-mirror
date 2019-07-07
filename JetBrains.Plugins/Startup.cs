@@ -65,7 +65,7 @@ namespace JetBrains.Plugins
 
             services.AddDbContextPool<PluginsDatabaseContext>
             (
-                options => options.UseNpgsql(content.ConnectionString)
+                options => PluginsDatabaseContext.ConfigureDefaultOptions(options).UseNpgsql(content.ConnectionString)
             );
         }
 

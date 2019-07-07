@@ -40,7 +40,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the category the plugin belongs to.
         /// </summary>
         [Required, NotNull]
-        public PluginCategory Category { get; set; }
+        public virtual PluginCategory Category { get; set; }
 
         /// <summary>
         /// Gets or sets the unique plugin identifier.
@@ -58,19 +58,19 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the plugin vendor.
         /// </summary>
         [Required, NotNull]
-        public Vendor Vendor { get; set; }
+        public virtual Vendor Vendor { get; set; }
 
         /// <summary>
         /// Gets or sets the list of released versions of this plugin.
         /// </summary>
         [Required, NotNull]
-        public List<PluginRelease> Releases { get; set; }
+        public virtual List<PluginRelease> Releases { get; set; } = new List<PluginRelease>();
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
         [Required, NotNull]
-        public List<string> Tags { get; set; }
+        public virtual List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the community rating of the plugin.
@@ -82,7 +82,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the project URL of the plugin.
         /// </summary>
         [Required, NotNull]
-        public string ProjectURL { get; set; } = string.Empty;
+        public string ProjectURL { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Plugin"/> class.

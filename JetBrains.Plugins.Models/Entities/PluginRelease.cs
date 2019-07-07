@@ -35,7 +35,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the parent plugin.
         /// </summary>
         [Required, NotNull]
-        public Plugin Plugin { get; set; }
+        public virtual Plugin Plugin { get; set; }
 
         /// <summary>
         /// Gets or sets the change notes for this release.
@@ -78,14 +78,14 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the range of IDE builds that this release is compatible with.
         /// </summary>
         [Required, NotNull]
-        public IDEVersionRange CompatibleWith { get; set; }
+        public virtual IDEVersionRange CompatibleWith { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugin IDs that this plugin depends on.
         /// </summary>
         /// <remarks>This list can be empty.</remarks>
         [Required, NotNull]
-        public List<string> Dependencies { get; set; }
+        public virtual List<string> Dependencies { get; set; } = new List<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginRelease"/> class.

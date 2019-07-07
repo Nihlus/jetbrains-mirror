@@ -40,7 +40,7 @@ namespace JetBrains.Plugins.Models
         /// Gets or sets the list of plugins in this category.
         /// </summary>
         [Required, NotNull]
-        public List<Plugin> Plugins { get; set; }
+        public virtual List<Plugin> Plugins { get; set; } = new List<Plugin>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginCategory"/> class.

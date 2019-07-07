@@ -18,6 +18,7 @@
 //
 
 using JetBrains.Annotations;
+using JetBrains.Plugins.Models.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace JetBrains.Plugins.Models
@@ -45,6 +46,19 @@ namespace JetBrains.Plugins.Models
         public PluginsDatabaseContext([NotNull] DbContextOptions<PluginsDatabaseContext> options)
             : base(options)
         {
+        }
+
+        /// <summary>
+        /// Configures the given options builder with the context's default expected options.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The configured builder.</returns>
+        public static DbContextOptionsBuilder ConfigureDefaultOptions
+        (
+            [NotNull] DbContextOptionsBuilder builder
+        )
+        {
+            return builder.UseLazyLoadingProxies();
         }
 
         /// <inheritdoc />

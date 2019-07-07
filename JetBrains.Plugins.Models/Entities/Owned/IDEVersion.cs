@@ -58,7 +58,7 @@ namespace JetBrains.Plugins.Models
         /// structure, separated by dots.
         /// </summary>
         [NotNull]
-        public List<int> Extra { get; set; } = new List<int>();
+        public virtual List<int> Extra { get; set; } = new List<int>();
 
         /// <summary>
         /// Parses an <see cref="IDEVersion"/> from the given string.
