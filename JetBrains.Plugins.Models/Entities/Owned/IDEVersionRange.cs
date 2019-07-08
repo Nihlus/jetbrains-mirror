@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,13 +33,13 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the lower inclusive bound of the compatibility range.
         /// </summary>
-        [CanBeNull]
+        [Required, NotNull]
         public virtual IDEVersion SinceBuild { get; set; }
 
         /// <summary>
         /// Gets or sets the upper exclusive bound of the compatibility range.
         /// </summary>
-        [CanBeNull]
+        [Required, NotNull]
         public virtual IDEVersion UntilBuild { get; set; }
 
         /// <summary>
@@ -48,17 +49,17 @@ namespace JetBrains.Plugins.Models
         /// <returns>true if the version falls inside of the range; otherwise, false.</returns>
         public bool IsInRange([NotNull] IDEVersion version)
         {
-            if (this.SinceBuild is null && this.UntilBuild is null)
+            if (!this.SinceBuild.IsValid && !this.UntilBuild.IsValid)
             {
                 return false;
             }
 
-            if (this.UntilBuild is null)
+            if (!this.UntilBuild.IsValid)
             {
                 return version >= this.SinceBuild;
             }
 
-            if (this.SinceBuild is null)
+            if (!this.SinceBuild.IsValid)
             {
                 return version < this.UntilBuild;
             }

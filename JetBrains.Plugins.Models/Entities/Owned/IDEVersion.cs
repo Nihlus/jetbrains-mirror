@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -35,6 +36,11 @@ namespace JetBrains.Plugins.Models
     [PublicAPI, Owned]
     public class IDEVersion : IComparable<IDEVersion>, IComparable, IEquatable<IDEVersion>
     {
+        /// <summary>
+        /// Gets an instance that represents an invalid value.
+        /// </summary>
+        public static IDEVersion Invalid => new IDEVersion();
+
         /// <summary>
         /// Gets or sets the product ID of this version.
         /// </summary>
@@ -59,6 +65,32 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         [NotNull]
         public virtual List<int> Extra { get; set; } = new List<int>();
+
+        /// <summary>
+        /// Gets a value indicating whether the version instance represents a valid value.
+        /// </summary>
+        [NotMapped]
+        public bool IsValid => !(this.ProductID is null && this.Branch == 0);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IDEVersion"/> class.
+        /// </summary>
+        protected IDEVersion()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IDEVersion"/> class.
+        /// </summary>
+        /// <param name="branch">The branch number.</param>
+        /// <param name="productID">The product ID.</param>
+        /// <param name="build">The build number.</param>
+        public IDEVersion(int branch, string productID = null, int? build = null)
+        {
+            this.Branch = branch;
+            this.ProductID = productID;
+            this.Build = build;
+        }
 
         /// <summary>
         /// Parses an <see cref="IDEVersion"/> from the given string.
@@ -88,6 +120,7 @@ namespace JetBrains.Plugins.Models
 
             if (value == "n/a")
             {
+                result = Invalid;
                 return true;
             }
 

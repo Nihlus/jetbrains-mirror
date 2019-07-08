@@ -175,8 +175,13 @@ namespace JetBrains.Plugins.Import
             await Task.WhenAll(importDefinitionTasks);
 
             // Stage 3: Import plugin releases
-            var importReleaseTasks = repository.Categories.SelectMany(c => c.Plugins).Select(ImportPluginReleaseScoped);
-            await Task.WhenAll(importReleaseTasks);
+            foreach (var plugin in repository.Categories.SelectMany(c => c.Plugins).GroupBy(p => p.ID))
+            {
+                await Console.Out.WriteLineAsync($"Importing {plugin.Count()} releases of {plugin.Key}...");
+                var importReleaseTasks = plugin.Select(ImportPluginReleaseScoped);
+
+                await Task.WhenAll(importReleaseTasks);
+            }
         }
 
         private static async Task<bool> ImportPluginReleaseAsync

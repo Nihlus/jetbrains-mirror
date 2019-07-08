@@ -124,8 +124,8 @@ namespace JetBrains.Plugins.Import.Extensions
 
             var versionRange = new IDEVersionRange
             {
-                SinceBuild = sinceBuild,
-                UntilBuild = untilBuild
+                SinceBuild = sinceBuild ?? IDEVersion.Invalid,
+                UntilBuild = untilBuild ?? IDEVersion.Invalid
             };
 
             // Get the file size and hash
