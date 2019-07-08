@@ -171,6 +171,8 @@ namespace JetBrains.Plugins.Import.Extensions
                 @this.Depends
             );
 
+            result.Downloads = @this.Downloads;
+
             return result;
         }
     }

@@ -31,6 +31,7 @@ using JetBrains.Plugins.Models.API.XML;
 using JetBrains.Plugins.Models.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MoreLinq;
 
 namespace JetBrains.Plugins.Import
 {
@@ -174,13 +175,24 @@ namespace JetBrains.Plugins.Import
 
             await Task.WhenAll(importDefinitionTasks);
 
-            // Stage 3: Import plugin releases
-            foreach (var plugin in repository.Categories.SelectMany(c => c.Plugins).GroupBy(p => p.ID))
-            {
-                await Console.Out.WriteLineAsync($"Importing {plugin.Count()} releases of {plugin.Key}...");
-                var importReleaseTasks = plugin.Select(ImportPluginReleaseScoped);
+            await Console.Out.WriteLineAsync("Importing releases...");
 
+            var allReleases = repository.Categories.SelectMany(c => c.Plugins).ToList();
+
+            // Stage 3: Import plugin releases
+            var remaining = allReleases.Count;
+            foreach (var plugin in allReleases.Batch(16))
+            {
+                var enumeratedBatch = plugin.ToList();
+
+                var importReleaseTasks = enumeratedBatch.Select(ImportPluginReleaseScoped);
                 await Task.WhenAll(importReleaseTasks);
+
+                remaining -= enumeratedBatch.Count;
+                await Console.Out.WriteLineAsync
+                (
+                    $"Imported batch ({enumeratedBatch.Count}) - {remaining} releases remaining."
+                );
             }
         }
 
