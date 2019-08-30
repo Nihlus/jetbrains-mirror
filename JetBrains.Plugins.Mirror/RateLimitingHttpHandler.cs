@@ -30,13 +30,13 @@ namespace JetBrains.Plugins.Mirror
     /// </summary>
     public class RateLimitingHttpHandler : DelegatingHandler
     {
-        private readonly IRateLimiter _rateLimiter;
+        private readonly TimeLimiter _rateLimiter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RateLimitingHttpHandler"/> class.
         /// </summary>
         /// <param name="rateLimiter">The rate limiter to use.</param>
-        public RateLimitingHttpHandler(IRateLimiter rateLimiter)
+        public RateLimitingHttpHandler(TimeLimiter rateLimiter)
         {
             _rateLimiter = rateLimiter;
         }
@@ -44,7 +44,7 @@ namespace JetBrains.Plugins.Mirror
         /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return await _rateLimiter.Perform(() => base.SendAsync(request, cancellationToken), cancellationToken);
+            return await _rateLimiter.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
         }
     }
 }
