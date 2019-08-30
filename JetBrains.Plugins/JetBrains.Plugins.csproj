@@ -42,6 +42,14 @@
     <ItemGroup>
       <ProjectReference Include="..\JetBrains.Plugins.Models\JetBrains.Plugins.Models.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Content Include="content\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
 
     <Import Project="..\props\common.props" />
     <Import Project="$(SolutionRoot)\props\stylecop.props" />

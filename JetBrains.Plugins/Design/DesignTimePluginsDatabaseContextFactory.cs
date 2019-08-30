@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using JetBrains.Annotations;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Services;
@@ -36,7 +37,7 @@ namespace JetBrains.Plugins.Design
         {
             var content = new ApplicationContentService();
             var options = new DbContextOptionsBuilder<PluginsDatabaseContext>()
-                .UseNpgsql(content.ConnectionString)
+                .UseNpgsql(content.ConnectionString, o => o.SetPostgresVersion(new Version(9, 2)))
                 .Options;
 
             return new PluginsDatabaseContext(options);

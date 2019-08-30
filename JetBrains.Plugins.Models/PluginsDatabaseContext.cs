@@ -65,8 +65,6 @@ namespace JetBrains.Plugins.Models
         protected override void OnModelCreating([NotNull] ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.ForNpgsqlUseIdentityAlwaysColumns();
         }
     }
 }

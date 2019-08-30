@@ -29,6 +29,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// Represents information about a single plugin.
     /// </summary>
     [PublicAPI]
+    [XmlRoot(ElementName = "idea-plugin")]
     public class IdeaPlugin
     {
         /// <summary>

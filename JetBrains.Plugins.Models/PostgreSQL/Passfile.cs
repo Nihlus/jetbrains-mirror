@@ -89,7 +89,7 @@ namespace JetBrains.Plugins.Models.PostgreSQL
             this.ConnectionString = $"Host={host};" +
                                     $"Port={port};" +
                                     $"Database={database};" +
-                                    $"Username={username};" +
+                                    $"User ID={username};" +
                                     $"Password={password};" +
                                     "Pooling=true;" +
                                     "Minimum Pool Size=1;" +

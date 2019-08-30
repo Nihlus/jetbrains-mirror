@@ -19,7 +19,7 @@ namespace JetBrains.Plugins.Models.Migrations
                 columns: table => new
                 {
                     ID = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -32,7 +32,7 @@ namespace JetBrains.Plugins.Models.Migrations
                 columns: table => new
                 {
                     ID = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: false),
                     CategoryID = table.Column<long>(nullable: false),
                     PluginID = table.Column<string>(nullable: false),
@@ -60,7 +60,7 @@ namespace JetBrains.Plugins.Models.Migrations
                 columns: table => new
                 {
                     ID = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     PluginID = table.Column<long>(nullable: false),
                     ChangeNotes = table.Column<string>(nullable: false),
                     Downloads = table.Column<long>(nullable: false),

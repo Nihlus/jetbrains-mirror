@@ -118,6 +118,11 @@ namespace JetBrains.Plugins.Models
 
             result = null;
 
+            if (value == null)
+            {
+                return false;
+            }
+
             if (value == "n/a")
             {
                 result = Invalid;
@@ -298,7 +303,7 @@ namespace JetBrains.Plugins.Models
         /// <returns>True if the left operand is logically lesser than the right operand; otherwise, false.</returns>
         public static bool operator <(IDEVersion left, IDEVersion right)
         {
-            return Comparer<IDEVersion>.Default.Compare(left, right) < 0;
+            return left.CompareTo(right) < 0;
         }
 
         /// <summary>
@@ -309,7 +314,7 @@ namespace JetBrains.Plugins.Models
         /// <returns>True if the left operand is logically greater than the right operand; otherwise, false.</returns>
         public static bool operator >(IDEVersion left, IDEVersion right)
         {
-            return Comparer<IDEVersion>.Default.Compare(left, right) > 0;
+            return left.CompareTo(right) > 0;
         }
 
         /// <summary>
@@ -323,7 +328,7 @@ namespace JetBrains.Plugins.Models
         /// </returns>
         public static bool operator <=(IDEVersion left, IDEVersion right)
         {
-            return Comparer<IDEVersion>.Default.Compare(left, right) <= 0;
+            return left.CompareTo(right) <= 0;
         }
 
         /// <summary>
@@ -337,7 +342,7 @@ namespace JetBrains.Plugins.Models
         /// </returns>
         public static bool operator >=(IDEVersion left, IDEVersion right)
         {
-            return Comparer<IDEVersion>.Default.Compare(left, right) >= 0;
+            return left.CompareTo(right) >= 0;
         }
 
         /// <summary>
@@ -386,7 +391,7 @@ namespace JetBrains.Plugins.Models
             }
 
             sb.Append(ToVersionComponent(this.Branch));
-            if (sb[sb.Length] == '*')
+            if (sb[sb.Length - 1] == '*')
             {
                 return sb.ToString();
             }
@@ -395,7 +400,7 @@ namespace JetBrains.Plugins.Models
             {
                 sb.Append('.');
                 sb.Append(ToVersionComponent(this.Build.Value));
-                if (sb[sb.Length] == '*')
+                if (sb[sb.Length - 1] == '*')
                 {
                     return sb.ToString();
                 }
@@ -406,7 +411,7 @@ namespace JetBrains.Plugins.Models
                 sb.Append('.');
                 sb.Append(ToVersionComponent(extra));
 
-                if (sb[sb.Length] == '*')
+                if (sb[sb.Length - 1] == '*')
                 {
                     return sb.ToString();
                 }
