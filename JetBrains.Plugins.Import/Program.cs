@@ -115,25 +115,25 @@ namespace JetBrains.Plugins.Import
 
         private static async Task ImportRepositoryAsync([NotNull] IServiceProvider services, [NotNull] IdeaPluginRepository repository)
         {
-            async Task ImportPluginReleaseScoped(IdeaPlugin pluginRelease)
+            async Task ImportPluginReleaseScoped(Plugin dbPlugin, IdeaPlugin pluginRelease)
             {
                 using (var scope = services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
 
-                    if (await ImportPluginReleaseAsync(db, pluginRelease))
+                    if (await ImportPluginReleaseAsync(db, dbPlugin, pluginRelease))
                     {
                         await db.SaveChangesAsync();
                     }
                 }
             }
 
-            async Task ImportPluginScopedAsync(IdeaPlugin pluginDefinition, IdeaPluginCategory category)
+            async Task ImportPluginScopedAsync(IdeaPlugin pluginDefinition, PluginCategory dbCategory)
             {
                 using (var scope = services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
-                    if (await ImportPluginAsync(db, pluginDefinition, category))
+                    if (await ImportPluginAsync(db, pluginDefinition, dbCategory))
                     {
                         await db.SaveChangesAsync();
                     }
@@ -158,52 +158,59 @@ namespace JetBrains.Plugins.Import
             await Console.Out.WriteLineAsync("Importing categories and plugin definitions...");
             await Task.WhenAll(repository.Categories.Select(ImportCategoryScopedAsync));
 
-            var importDefinitionTasks = new List<Task>();
-
             // Stage 2: Import plugin definitions
             foreach (var category in repository.Categories)
             {
-                var pluginDefinitions = category.Plugins.GroupBy(p => p.ID).Select(g => g.First()).ToList();
+                using (var db = services.GetRequiredService<PluginsDatabaseContext>())
+                {
+                    var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);
 
-                await Console.Out.WriteLineAsync
-                (
-                    $"Importing {pluginDefinitions.Count} plugins from \"{category.Name}\"..."
-                );
+                    var pluginDefinitions = category.Plugins.GroupBy(p => p.ID).Select(g => g.First()).ToList();
 
-                importDefinitionTasks.AddRange(pluginDefinitions.Select(p => ImportPluginScopedAsync(p, category)));
+                    await Console.Out.WriteLineAsync
+                    (
+                        $"Importing {pluginDefinitions.Count} plugins from \"{category.Name}\"..."
+                    );
+
+                    await Task.WhenAll(pluginDefinitions.Select(async p => await ImportPluginScopedAsync(p, dbCategory)));
+                }
             }
-
-            await Task.WhenAll(importDefinitionTasks);
 
             await Console.Out.WriteLineAsync("Importing releases...");
 
-            var allReleases = repository.Categories.SelectMany(c => c.Plugins).ToList();
-
-            // Stage 3: Import plugin releases
-            var remaining = allReleases.Count;
-            foreach (var plugin in allReleases.Batch(16))
+            foreach (var category in repository.Categories)
             {
-                var enumeratedBatch = plugin.ToList();
+                var releases = category.Plugins.GroupBy(p => p.ID);
+                foreach (var releaseGroup in releases)
+                {
+                    using (var db = services.GetRequiredService<PluginsDatabaseContext>())
+                    {
+                        var dbPlugin = await db.Plugins.FirstOrDefaultAsync(p => p.PluginID == releaseGroup.Key);
 
-                var importReleaseTasks = enumeratedBatch.Select(ImportPluginReleaseScoped);
-                await Task.WhenAll(importReleaseTasks);
+                        // Stage 3: Import plugin releases
+                        foreach (var plugin in releaseGroup.Batch(16))
+                        {
+                            var enumeratedBatch = plugin.ToList();
 
-                remaining -= enumeratedBatch.Count;
-                await Console.Out.WriteLineAsync
-                (
-                    $"Imported batch ({enumeratedBatch.Count}) - {remaining} releases remaining."
-                );
+                            var importReleaseTasks = enumeratedBatch.Select
+                            (
+                                async p => await ImportPluginReleaseScoped(dbPlugin, p)
+                            );
+
+                            await Task.WhenAll(importReleaseTasks);
+                        }
+                    }
+                }
             }
         }
 
         private static async Task<bool> ImportPluginReleaseAsync
         (
             [NotNull] PluginsDatabaseContext db,
+            [NotNull] Plugin dbPlugin,
             [NotNull] IdeaPlugin pluginRelease
         )
         {
-            var dbPlugin = await db.Plugins.FirstOrDefaultAsync(p => p.PluginID == pluginRelease.ID);
-
             var dbRelease = dbPlugin.Releases.FirstOrDefault(r => r.Version == pluginRelease.Version);
             if (dbRelease is null)
             {
@@ -231,15 +238,9 @@ namespace JetBrains.Plugins.Import
         (
             [NotNull] PluginsDatabaseContext db,
             [NotNull] IdeaPlugin plugin,
-            [NotNull] IdeaPluginCategory category
+            [NotNull] PluginCategory dbCategory
         )
         {
-            var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);
-            if (dbCategory is null)
-            {
-                return false;
-            }
-
             var dbPlugin = await db.Plugins.FirstOrDefaultAsync(p => p.PluginID == plugin.ID);
             if (dbPlugin is null)
             {

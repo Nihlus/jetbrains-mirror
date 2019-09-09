@@ -164,7 +164,7 @@ namespace JetBrains.Plugins.Import.Extensions
                 dbPlugin,
                 @this.ChangeNotes,
                 size,
-                ParseDateFromMilliseconds(@this.UpdateDate),
+                ParseDateFromMilliseconds(@this.UploadDate),
                 hash,
                 @this.Version,
                 versionRange,

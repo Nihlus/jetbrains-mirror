@@ -122,7 +122,7 @@ namespace JetBrains.Plugins.Models.API.XML
         public string ProjectURL { get; set; }
 
         /// <summary>
-        /// Gets or sets the initial upload date of the plugin.
+        /// Gets or sets the upload date of the plugin release.
         /// </summary>
         [CanBeNull]
         [XmlAttribute(AttributeName = "date")]

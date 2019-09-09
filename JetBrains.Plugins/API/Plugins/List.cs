@@ -95,6 +95,8 @@ namespace JetBrains.Plugins.API.Plugins
                             },
                             new IdeaVersion
                             {
+                                Min = "n/a",
+                                Max = "n/a",
                                 UntilBuild = compatibleRelease.CompatibleWith.UntilBuild.ToString(),
                                 SinceBuild = compatibleRelease.CompatibleWith.SinceBuild.ToString()
                             },
