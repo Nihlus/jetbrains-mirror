@@ -103,11 +103,14 @@ namespace JetBrains.Plugins.API.Plugins
                             compatibleRelease.ChangeNotes
                         )
                         {
+                            ProjectURL = p.ProjectURL,
+                            Tags = p.Tags.Aggregate((a, b) => a + ";" + b),
                             Depends = compatibleRelease.Dependencies,
                             Downloads = compatibleRelease.Downloads,
                             Size = compatibleRelease.Size,
                             Rating = p.Rating,
-                            UploadDate = compatibleRelease.UploadedAt.ToFileTimeUtc().ToString()
+                            UploadDate = (compatibleRelease.UploadedAt.ToFileTimeUtc() / 10000 ).ToString(),
+                            UpdateDate = (p.Releases.Select(r => r.UploadedAt).OrderBy(d => d).First().ToFileTimeUtc() / 10000).ToString()
                         };
 
                         return ideaPlugin;

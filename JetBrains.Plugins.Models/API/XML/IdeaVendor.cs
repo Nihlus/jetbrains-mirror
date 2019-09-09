@@ -26,6 +26,7 @@ namespace JetBrains.Plugins.Models.API.XML
     /// Represents a plugin vendor.
     /// </summary>
     [PublicAPI]
+    [XmlRoot(ElementName = "vendor")]
     public class IdeaVendor
     {
         /// <summary>
@@ -46,6 +47,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// Gets or sets the vendor's name.
         /// </summary>
         [CanBeNull]
+        [XmlText]
         public string Name { get; set; }
 
         /// <inheritdoc />

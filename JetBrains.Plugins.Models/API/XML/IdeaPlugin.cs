@@ -86,7 +86,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [CanBeNull]
         [XmlElement(ElementName = "depends")]
-        public List<string> Depends { get; set; }
+        public List<string> Depends { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
