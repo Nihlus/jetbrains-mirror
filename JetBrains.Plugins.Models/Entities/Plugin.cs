@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -83,6 +84,12 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         [Required, NotNull]
         public string ProjectURL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last time the plugin was updated.
+        /// </summary>
+        [Required]
+        public DateTime UpdatedAt { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Plugin"/> class.

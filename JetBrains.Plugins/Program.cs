@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Net;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -43,6 +44,11 @@ namespace JetBrains.Plugins
         /// <returns>The builder.</returns>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseKestrel(o =>
+                {
+                    o.ListenAnyIP(5000);
+                    //o.ListenAnyIP(5001, lo => lo.UseHttps());
+                });
     }
 }

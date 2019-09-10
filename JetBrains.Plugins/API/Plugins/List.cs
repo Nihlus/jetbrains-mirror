@@ -68,57 +68,49 @@ namespace JetBrains.Plugins.API.Plugins
             {
                 var ideaCategory = ideaCategories.First(c => c.Name == category.Name);
 
-                var plugins = category.Plugins.Select
-                (
-                    p =>
+                foreach (var plugin in category.Plugins)
+                {
+                    var compatibleRelease = plugin.Releases
+                        .OrderBy(r => r.UploadedAt)
+                        .FirstOrDefault(r => r.CompatibleWith.IsInRange(ideVersion));
+
+                    if (compatibleRelease is null)
                     {
-                        var compatibleRelease = p.Releases
-                            .OrderBy(r => r.UploadedAt)
-                            .FirstOrDefault(r => r.CompatibleWith.IsInRange(ideVersion));
-
-                        if (compatibleRelease is null)
-                        {
-                            return null;
-                        }
-
-                        var ideaPlugin = new IdeaPlugin
-                        (
-                            p.Name,
-                            p.PluginID,
-                            p.Description,
-                            compatibleRelease.Version,
-                            new IdeaVendor
-                            {
-                                Email = p.Vendor.Email,
-                                Name = p.Vendor.Name,
-                                URL = p.Vendor.URL
-                            },
-                            new IdeaVersion
-                            {
-                                Min = "n/a",
-                                Max = "n/a",
-                                UntilBuild = compatibleRelease.CompatibleWith.UntilBuild.ToString(),
-                                SinceBuild = compatibleRelease.CompatibleWith.SinceBuild.ToString()
-                            },
-                            compatibleRelease.ChangeNotes
-                        )
-                        {
-                            ProjectURL = p.ProjectURL,
-                            Tags = p.Tags.Aggregate((a, b) => a + ";" + b),
-                            Depends = compatibleRelease.Dependencies,
-                            Downloads = compatibleRelease.Downloads,
-                            Size = compatibleRelease.Size,
-                            Rating = p.Rating,
-                            UploadDate = (compatibleRelease.UploadedAt.ToFileTimeUtc() / 10000 ).ToString(),
-                            UpdateDate = (p.Releases.Select(r => r.UploadedAt).OrderBy(d => d).First().ToFileTimeUtc() / 10000).ToString()
-                        };
-
-                        return ideaPlugin;
+                        continue;
                     }
-                )
-                .Where(p => !(p is null));
 
-                ideaCategory.Plugins = plugins.ToList();
+                    var ideaPlugin = new IdeaPlugin
+                    (
+                        plugin.Name,
+                        plugin.PluginID,
+                        plugin.Description,
+                        compatibleRelease.Version,
+                        new IdeaVendor
+                        {
+                            Email = plugin.Vendor.Email,
+                            Name = plugin.Vendor.Name,
+                            URL = plugin.Vendor.URL
+                        },
+                        new IdeaVersion
+                        {
+                            UntilBuild = compatibleRelease.CompatibleWith.UntilBuild.IsValid ? compatibleRelease.CompatibleWith.UntilBuild.ToString() : null,
+                            SinceBuild = compatibleRelease.CompatibleWith.SinceBuild.IsValid ? compatibleRelease.CompatibleWith.SinceBuild.ToString() : null,
+                        },
+                        compatibleRelease.ChangeNotes
+                    )
+                    {
+                        ProjectURL = plugin.ProjectURL,
+                        Tags = plugin.Tags.Aggregate((a, b) => a + ";" + b),
+                        Depends = compatibleRelease.Dependencies,
+                        Downloads = compatibleRelease.Downloads,
+                        Size = compatibleRelease.Size,
+                        Rating = plugin.Rating,
+                        UploadDate = (compatibleRelease.UploadedAt.ToFileTimeUtc() / 10000 ).ToString(),
+                        UpdateDate = (plugin.Releases.Select(r => r.UploadedAt).OrderBy(d => d).First().ToFileTimeUtc() / 10000).ToString()
+                    };
+
+                    ideaCategory.Plugins.Add(ideaPlugin);
+                }
             }
 
             var ideaRepository = new IdeaPluginRepository();

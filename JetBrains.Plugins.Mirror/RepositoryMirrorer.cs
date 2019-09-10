@@ -155,8 +155,14 @@ namespace JetBrains.Plugins.Mirror
                 category.Plugins.AddRange(downloadResults.Where(r => r.IsSuccess).Select(r => r.Plugin));
             }
 
+            var repoPath = Path.Combine(baseDirectory, "repository.xml");
+            if (File.Exists(repoPath))
+            {
+                File.Delete(repoPath);
+            }
+
             var serializer = new XmlSerializer(typeof(IdeaPluginRepository));
-            using (var output = File.OpenWrite(Path.Combine(baseDirectory, "repository.xml")))
+            using (var output = File.OpenWrite(repoPath))
             {
                 serializer.Serialize(output, mirroredRepository);
             }

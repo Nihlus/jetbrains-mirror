@@ -47,6 +47,12 @@ namespace JetBrains.Plugins.Import.Extensions
             [NotNull] PluginCategory dbCategory
         )
         {
+            DateTime ParseDateFromMilliseconds(string value)
+            {
+                var millis = long.Parse(value);
+                return DateTimeOffset.FromUnixTimeMilliseconds(millis).UtcDateTime;
+            }
+
             var result = new Plugin
             (
                 @this.Name,
@@ -59,6 +65,7 @@ namespace JetBrains.Plugins.Import.Extensions
             result.Tags = @this.Tags?.Split(';').ToList() ?? new List<string>();
             result.Rating = @this.Rating;
             result.ProjectURL = @this.ProjectURL ?? string.Empty;
+            result.UpdatedAt = ParseDateFromMilliseconds(@this.UpdateDate);
 
             return result;
         }
