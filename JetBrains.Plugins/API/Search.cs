@@ -67,7 +67,7 @@ namespace JetBrains.Plugins.API
         }
 
         [NotNull]
-        private IEnumerable<string> GetResults(IDEVersion version, int max, string orderBy, string search)
+        private IEnumerable<string> GetResults(IDEVersion version, int max, string orderBy, [CanBeNull] string search)
         {
             var compatibleIDs = new List<string>();
 
@@ -101,48 +101,31 @@ namespace JetBrains.Plugins.API
 
             foreach (var plugin in plugins)
             {
-                if (plugin.Releases.Any(r => r.CompatibleWith.IsInRange(version)))
-                {
-                    if (search is null)
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-
-                    if (plugin.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-
-                    if (plugin.Description.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-
-                    if (plugin.Tags.Any(t => t.Contains(search, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-
-                    if (plugin.PluginID.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-
-                    if (plugin.ProjectURL.Contains(search, StringComparison.OrdinalIgnoreCase))
-                    {
-                        compatibleIDs.Add(plugin.PluginID);
-                        continue;
-                    }
-                }
-
                 if (compatibleIDs.Count >= max)
                 {
                     break;
+                }
+
+                if (!plugin.Releases.Any(r => r.CompatibleWith.IsInRange(version)))
+                {
+                    continue;
+                }
+
+                if (search is null)
+                {
+                    compatibleIDs.Add(plugin.PluginID);
+                    continue;
+                }
+
+                if (plugin.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                {
+                    compatibleIDs.Add(plugin.PluginID);
+                    continue;
+                }
+
+                if (plugin.PluginID.Contains(search, StringComparison.OrdinalIgnoreCase))
+                {
+                    compatibleIDs.Add(plugin.PluginID);
                 }
             }
 
