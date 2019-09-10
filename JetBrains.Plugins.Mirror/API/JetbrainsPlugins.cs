@@ -112,6 +112,45 @@ namespace JetBrains.Plugins.Mirror.API
         }
 
         /// <summary>
+        /// Downloads the icon of the given plugin.
+        /// </summary>
+        /// <param name="plugin">The plugin to download the icon of.</param>
+        /// <param name="theme">The theme variant to download.</param>
+        /// <param name="ct">The cancellation token in use.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [ItemNotNull]
+        public async Task<HttpResponseMessage> DownloadIconAsync
+        (
+            [NotNull] IdeaPlugin plugin,
+            [CanBeNull] string theme,
+            CancellationToken ct
+        )
+        {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query[Endpoints.API.Icon.Parameters.PluginID] = plugin.ID;
+
+            if (!(theme is null))
+            {
+                query[Endpoints.API.Icon.Parameters.Theme] = theme.ToUpperInvariant();
+            }
+
+            var uriBuilder = new UriBuilder("https", _baseURL)
+            {
+                Path = Endpoints.API.Icon.BasePath,
+                Query = query.ToString()
+            };
+
+            // Resolve moved requests.
+            var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
+            while (!data.IsSuccessStatusCode && (data.StatusCode == HttpStatusCode.MovedPermanently || data.StatusCode == HttpStatusCode.Found))
+            {
+                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+            }
+
+            return data;
+        }
+
+        /// <summary>
         /// Downloads the given plugin.
         /// </summary>
         /// <param name="plugin">The plugin.</param>

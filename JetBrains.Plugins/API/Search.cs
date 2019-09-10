@@ -106,10 +106,37 @@ namespace JetBrains.Plugins.API
                     if (search is null)
                     {
                         compatibleIDs.Add(plugin.PluginID);
+                        continue;
                     }
-                    else if (plugin.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+
+                    if (plugin.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
                     {
                         compatibleIDs.Add(plugin.PluginID);
+                        continue;
+                    }
+
+                    if (plugin.Description.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    {
+                        compatibleIDs.Add(plugin.PluginID);
+                        continue;
+                    }
+
+                    if (plugin.Tags.Any(t => t.Contains(search, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        compatibleIDs.Add(plugin.PluginID);
+                        continue;
+                    }
+
+                    if (plugin.PluginID.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    {
+                        compatibleIDs.Add(plugin.PluginID);
+                        continue;
+                    }
+
+                    if (plugin.ProjectURL.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    {
+                        compatibleIDs.Add(plugin.PluginID);
+                        continue;
                     }
                 }
 

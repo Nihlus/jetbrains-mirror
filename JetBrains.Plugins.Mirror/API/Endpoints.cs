@@ -32,6 +32,39 @@ namespace JetBrains.Plugins.Mirror.API
         public const string BaseURL = "plugins.jetbrains.com";
 
         /// <summary>
+        /// Holds static data about general API endpoints.
+        /// </summary>
+        public static class API
+        {
+            /// <summary>
+            /// Holds static data about the Icon endpoint.
+            /// </summary>
+            public static class Icon
+            {
+                /// <summary>
+                /// Gets the base path of the API on the URL.
+                /// </summary>
+                public const string BasePath = "api/icon";
+
+                /// <summary>
+                /// Holds static parameter information about the <see cref="PluginList"/> endpoint.
+                /// </summary>
+                public static class Parameters
+                {
+                    /// <summary>
+                    /// Gets the name of the plugin ID parameter.
+                    /// </summary>
+                    public const string PluginID = "pluginId";
+
+                    /// <summary>
+                    /// Gets the name of the theme parameter. This parameter is optional.
+                    /// </summary>
+                    public const string Theme = "theme";
+                }
+            }
+        }
+
+        /// <summary>
         /// Holds static data about plugin listing endpoints.
         /// </summary>
         public static class PluginList

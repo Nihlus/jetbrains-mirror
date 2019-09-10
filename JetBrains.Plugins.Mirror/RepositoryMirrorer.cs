@@ -239,6 +239,130 @@ namespace JetBrains.Plugins.Mirror
         }
 
         /// <summary>
+        /// Downloads the icon of the given plugin.
+        /// </summary>
+        /// <param name="targetDirectory">The directory to store the icon in.</param>
+        /// <param name="plugin">The plugin to download the icon of.</param>
+        /// <param name="theme">The theme variant to download.</param>
+        /// <param name="ct">The cancellation token in use.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [ItemNotNull]
+        private async Task<DownloadResult> DownloadIconAsync
+        (
+            string targetDirectory,
+            [NotNull] IdeaPlugin plugin,
+            [CanBeNull] string theme,
+            CancellationToken ct
+        )
+        {
+            // First, let's perform a quick existing file check against the values in the reported plugin
+            var sluggedPluginName = plugin.Name.GenerateSlug();
+
+            var saveDirectory = Path.Combine
+            (
+                targetDirectory,
+                sluggedPluginName
+            );
+
+            if (!(theme is null))
+            {
+                saveDirectory = Path.Combine(saveDirectory, theme.GenerateSlug());
+            }
+
+            if (Directory.Exists(saveDirectory))
+            {
+                var existingFile = Directory.GetFiles(saveDirectory).FirstOrDefault();
+                if (!(existingFile is null))
+                {
+                    if (new FileInfo(existingFile).Length != 0)
+                    {
+                        // Looks like we already have this one
+                        return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
+                    }
+                }
+            }
+
+            try
+            {
+                using (var data = await _api.DownloadIconAsync(plugin, theme, ct))
+                {
+                    if (!data.IsSuccessStatusCode)
+                    {
+                        return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
+                    }
+
+                    string filename = null;
+                    if (data.Content.Headers?.ContentDisposition?.FileName is null)
+                    {
+                        // Try an alternate way
+                        var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
+                        if (!(alternatePath is null))
+                        {
+                            if (Path.HasExtension(alternatePath))
+                            {
+                                filename = Path.GetFileName(alternatePath);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        filename = data.Content.Headers.ContentDisposition.FileName;
+                    }
+
+                    if (filename is null)
+                    {
+                        return DownloadResult.FromError
+                        (
+                            plugin,
+                            DownloadError.Unknown,
+                            "Failed to retrieve file information from the download headers."
+                        );
+                    }
+
+                    Directory.CreateDirectory(saveDirectory);
+
+                    var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
+
+                    if (File.Exists(savePath))
+                    {
+                        var expectedSize = data.Content.Headers?.ContentLength;
+                        if (new FileInfo(savePath).Length == expectedSize)
+                        {
+                            // Looks like we already have this one
+                            return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
+                        }
+
+                        // It's crap, so delete it and download again
+                        File.Delete(savePath);
+                    }
+
+                    // Download to a temporary file first
+                    var tempFile = Path.GetTempFileName();
+                    using (var tempOutput = File.Create(tempFile))
+                    {
+                        using (var contentStream = await data.Content.ReadAsStreamAsync())
+                        {
+                            await contentStream.CopyToAsync(tempOutput, ct);
+                        }
+                    }
+
+                    // And then move it over to the final save location
+                    File.Move(tempFile, savePath);
+
+                    return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
+                }
+            }
+            catch (TimeoutException tex)
+            {
+                return DownloadResult.FromError(plugin, DownloadError.Timeout, tex.Message);
+            }
+            catch (Exception ex)
+            {
+                return DownloadResult.FromError(plugin, DownloadError.Exception, ex.Message, ex);
+            }
+        }
+
+        /// <summary>
         /// Downloads the given plugin.
         /// </summary>
         /// <param name="targetDirectory">The directory in which to save the plugin.</param>
@@ -253,6 +377,11 @@ namespace JetBrains.Plugins.Mirror
             CancellationToken ct
         )
         {
+            // Try downloading the icon variants
+            var iconTargetDirectory = Path.Combine(Program.Options.OutputFolder, "icons");
+            await DownloadIconAsync(iconTargetDirectory, plugin, null, ct);
+            await DownloadIconAsync(iconTargetDirectory, plugin, "DARCULA", ct);
+
             // First, let's perform a quick existing file check against the values in the reported plugin
             var sluggedPluginName = plugin.Name.GenerateSlug();
             var version = plugin.Version;
