@@ -23,7 +23,6 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 
 namespace Jetbrains.Plugins.Helpers
 {

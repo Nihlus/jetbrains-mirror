@@ -21,7 +21,6 @@
 //
 
 using System;
-using JetBrains.Annotations;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Services;
 using Microsoft.EntityFrameworkCore;

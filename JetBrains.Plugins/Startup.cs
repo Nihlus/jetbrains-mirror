@@ -20,16 +20,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using JetBrains.Annotations;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace JetBrains.Plugins
 {
@@ -61,8 +60,8 @@ namespace JetBrains.Plugins
             var content = new ApplicationContentService();
 
             services
-                .AddMvc()
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddMvc(o => o.EnableEndpointRouting = false)
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                     .AddXmlSerializerFormatters();
 
             services.AddSingleton(content);
@@ -78,7 +77,7 @@ namespace JetBrains.Plugins
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -90,7 +89,6 @@ namespace JetBrains.Plugins
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

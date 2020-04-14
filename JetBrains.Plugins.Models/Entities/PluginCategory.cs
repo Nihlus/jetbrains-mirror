@@ -58,6 +58,7 @@ namespace JetBrains.Plugins.Models
         /// Initializes a new instance of the <see cref="PluginCategory"/> class.
         /// </summary>
         /// <param name="name">The name of the category.</param>
+        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Intentional.")]
         public PluginCategory(string name)
         {
             this.Name = name;

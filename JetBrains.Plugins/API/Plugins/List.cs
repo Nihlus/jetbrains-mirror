@@ -20,10 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Models.API.XML;

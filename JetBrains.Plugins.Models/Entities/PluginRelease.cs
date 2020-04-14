@@ -110,6 +110,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="version">The version of this release.</param>
         /// <param name="compatibleWith">The IDE versions this release is compatible with.</param>
         /// <param name="dependencies">The dependencies of this release.</param>
+        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Intentional.")]
         public PluginRelease
         (
             Plugin plugin,

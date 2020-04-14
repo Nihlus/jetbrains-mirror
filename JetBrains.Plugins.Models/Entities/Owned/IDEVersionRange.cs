@@ -21,6 +21,7 @@
 //
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,7 @@ namespace JetBrains.Plugins.Models
         /// </summary>
         /// <param name="sinceBuild">The initial build.</param>
         /// <param name="untilBuild">The final build.</param>
+        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Intentional.")]
         public IDEVersionRange(IDEVersion sinceBuild, IDEVersion untilBuild)
         {
             this.SinceBuild = sinceBuild;

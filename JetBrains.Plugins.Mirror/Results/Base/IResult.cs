@@ -21,7 +21,6 @@
 //
 
 using System;
-using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Mirror.Results
 {

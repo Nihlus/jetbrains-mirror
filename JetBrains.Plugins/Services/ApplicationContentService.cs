@@ -21,7 +21,6 @@
 //
 
 using System.IO;
-using JetBrains.Annotations;
 using JetBrains.Plugins.Models.PostgreSQL;
 
 namespace JetBrains.Plugins.Services

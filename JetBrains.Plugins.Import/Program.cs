@@ -27,7 +27,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CommandLine;
-using JetBrains.Annotations;
 using JetBrains.Plugins.Import.Extensions;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Models.API.XML;

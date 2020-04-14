@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using JetBrains.Annotations;
 using JetBrains.Plugins.Import.Helpers;
 using JetBrains.Plugins.Models;
 using JetBrains.Plugins.Models.API.XML;

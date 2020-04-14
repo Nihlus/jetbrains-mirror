@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.IO;
 using CommandLine;
 using CommandLine.Text;
-using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Mirror
 {

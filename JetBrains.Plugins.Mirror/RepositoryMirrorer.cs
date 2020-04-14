@@ -87,7 +87,7 @@ namespace JetBrains.Plugins.Mirror
 
             await Console.Out.WriteLineAsync("Done. Starting mirroring...");
 
-            var categoryDownloads = new List<(string categoryName, Task<DownloadResult[]> results)>();
+            var categoryDownloads = new List<(string CategoryName, Task<DownloadResult[]> Results)>();
             foreach (var category in repository.Categories)
             {
                 var finalizedDownloads = new List<Task<DownloadResult>>();

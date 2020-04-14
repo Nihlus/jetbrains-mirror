@@ -111,6 +111,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="pluginID">The unique ID of the plugin.</param>
         /// <param name="description">The plugin's description.</param>
         /// <param name="vendor">The plugin's vendor.</param>
+        [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor", Justification = "Intentional.")]
         public Plugin
         (
             string name,

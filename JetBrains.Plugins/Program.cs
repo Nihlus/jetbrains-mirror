@@ -20,7 +20,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Net;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -51,7 +50,6 @@ namespace JetBrains.Plugins
                 .UseKestrel(o =>
                 {
                     o.ListenAnyIP(5000);
-                    //o.ListenAnyIP(5001, lo => lo.UseHttps());
                 });
     }
 }

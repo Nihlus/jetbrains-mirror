@@ -20,7 +20,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using JetBrains.Annotations;
 using JetBrains.Plugins.Models.API.XML;
 
 namespace JetBrains.Plugins.Import.Extensions

@@ -21,7 +21,6 @@
 //
 
 using JetBrains.Annotations;
-using JetBrains.Plugins.Models.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace JetBrains.Plugins.Models

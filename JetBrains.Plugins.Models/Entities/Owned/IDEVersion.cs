@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -101,21 +100,6 @@ namespace JetBrains.Plugins.Models
         [Pure]
         public static bool TryParse(string value, [NotNullWhen(true)] out IDEVersion? result)
         {
-            int ParseBuildNumber(string buildComponent)
-            {
-                if (buildComponent.Length == 1 && buildComponent[0] == '*')
-                {
-                    return -1;
-                }
-
-                if (!int.TryParse(buildComponent, out var component))
-                {
-                    throw new InvalidDataException("Failed to parse a build number component.");
-                }
-
-                return component;
-            }
-
             result = null;
 
             if (value == "n/a")
@@ -140,23 +124,28 @@ namespace JetBrains.Plugins.Models
             var extra = new List<int>();
             for (var i = 0; i < components.Length; ++i)
             {
+                if (!TryParseBuildNumber(components[i], out var buildNumber))
+                {
+                    return false;
+                }
+
                 switch (i)
                 {
                     case 0:
                     {
-                        branch = ParseBuildNumber(components[i]);
+                        branch = buildNumber.Value;
                         break;
                     }
 
                     case 1:
                     {
-                        build = ParseBuildNumber(components[i]);
+                        build = buildNumber.Value;
                         break;
                     }
 
                     default:
                     {
-                        extra.Add(ParseBuildNumber(components[i]));
+                        extra.Add(buildNumber.Value);
                         break;
                     }
                 }
@@ -170,6 +159,25 @@ namespace JetBrains.Plugins.Models
                 Extra = extra
             };
 
+            return true;
+        }
+
+        private static bool TryParseBuildNumber(string buildComponent, [NotNullWhen(true)] out int? buildNumber)
+        {
+            buildNumber = null;
+
+            if (buildComponent.Length == 1 && buildComponent[0] == '*')
+            {
+                buildNumber = -1;
+                return true;
+            }
+
+            if (!int.TryParse(buildComponent, out var component))
+            {
+                return false;
+            }
+
+            buildNumber = component;
             return true;
         }
 
