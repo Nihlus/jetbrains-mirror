@@ -40,49 +40,49 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [Required]
         [XmlElement(ElementName = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the ID of the plugin.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "id")]
-        public string ID { get; set; }
+        public string ID { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the description of the plugin.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the latest version of the plugin.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "version")]
-        public string Version { get; set; }
+        public string Version { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the vendor that develops the plugin.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "vendor")]
-        public IdeaVendor Vendor { get; set; }
+        public IdeaVendor Vendor { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the IDEA versions that the plugin supports.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "idea-version")]
-        public IdeaVersion IdeaVersion { get; set; }
+        public IdeaVersion IdeaVersion { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the latest change notes.
         /// </summary>
         [Required]
         [XmlElement(ElementName = "change-notes")]
-        public string ChangeNotes { get; set; }
+        public string ChangeNotes { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of plugins this plugin depends on.

@@ -124,8 +124,8 @@ namespace JetBrains.Plugins.Mirror.API
         [ItemNotNull]
         public async Task<HttpResponseMessage> DownloadIconAsync
         (
-            [NotNull] IdeaPlugin plugin,
-            [CanBeNull] string theme,
+            IdeaPlugin plugin,
+            string? theme,
             CancellationToken ct
         )
         {
@@ -159,8 +159,7 @@ namespace JetBrains.Plugins.Mirror.API
         /// <param name="plugin">The plugin.</param>
         /// <param name="ct">The cancellation token to use.</param>
         /// <returns>The response from the server.</returns>
-        [NotNull]
-        public Task<HttpResponseMessage> DownloadAsync([NotNull] IdeaPlugin plugin, CancellationToken ct) =>
+        public Task<HttpResponseMessage> DownloadAsync(IdeaPlugin plugin, CancellationToken ct) =>
             DownloadSpecificAsync(plugin.ID, plugin.Version, ct);
 
         /// <summary>

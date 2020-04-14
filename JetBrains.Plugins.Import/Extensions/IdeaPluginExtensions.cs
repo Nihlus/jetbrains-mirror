@@ -43,11 +43,10 @@ namespace JetBrains.Plugins.Import.Extensions
         /// <param name="this">The IdeaPlugin.</param>
         /// <param name="dbCategory">The plugin category.</param>
         /// <returns>The mapped plugin.</returns>
-        [NotNull]
         public static Plugin ToEntity
         (
-            [NotNull] this IdeaPlugin @this,
-            [NotNull] PluginCategory dbCategory
+            this IdeaPlugin @this,
+            PluginCategory dbCategory
         )
         {
             DateTime ParseDateFromMilliseconds(string value)
@@ -68,7 +67,10 @@ namespace JetBrains.Plugins.Import.Extensions
             result.Tags = @this.Tags?.Split(';').ToList() ?? new List<string>();
             result.Rating = @this.Rating;
             result.ProjectURL = @this.ProjectURL ?? string.Empty;
-            result.UpdatedAt = ParseDateFromMilliseconds(@this.UpdateDate);
+            result.UpdatedAt = ParseDateFromMilliseconds
+            (
+                @this.UpdateDate ?? @this.UploadDate ?? throw new InvalidOperationException()
+            );
 
             return result;
         }
@@ -79,14 +81,13 @@ namespace JetBrains.Plugins.Import.Extensions
         /// <param name="this">The IdeaPlugin.</param>
         /// <param name="dbPlugin">The plugin that the release belongs to.</param>
         /// <returns>The mapped release.</returns>
-        [NotNull]
         public static PluginRelease ToReleaseEntity
         (
-            [NotNull] this IdeaPlugin @this,
-            [NotNull] Plugin dbPlugin
+            this IdeaPlugin @this,
+            Plugin dbPlugin
         )
         {
-            string SelectBestSinceValue(IdeaVersion version)
+            string? SelectBestSinceValue(IdeaVersion version)
             {
                 if (version.SinceBuild is null || version.SinceBuild == "n/a")
                 {
@@ -96,7 +97,7 @@ namespace JetBrains.Plugins.Import.Extensions
                 return version.SinceBuild;
             }
 
-            string SelectBestUntilValue(IdeaVersion version)
+            string? SelectBestUntilValue(IdeaVersion version)
             {
                 if (version.UntilBuild is null || version.UntilBuild == "n/a")
                 {
@@ -113,7 +114,7 @@ namespace JetBrains.Plugins.Import.Extensions
             }
 
             var sinceBuildValue = SelectBestSinceValue(@this.IdeaVersion);
-            IDEVersion sinceBuild = null;
+            IDEVersion? sinceBuild = null;
             if (!(sinceBuildValue is null))
             {
                 if (!IDEVersion.TryParse(sinceBuildValue, out sinceBuild))
@@ -123,7 +124,7 @@ namespace JetBrains.Plugins.Import.Extensions
             }
 
             var untilBuildValue = SelectBestUntilValue(@this.IdeaVersion);
-            IDEVersion untilBuild = null;
+            IDEVersion? untilBuild = null;
             if (!(untilBuildValue is null))
             {
                 if (!IDEVersion.TryParse(untilBuildValue, out untilBuild))
@@ -133,10 +134,10 @@ namespace JetBrains.Plugins.Import.Extensions
             }
 
             var versionRange = new IDEVersionRange
-            {
-                SinceBuild = sinceBuild ?? IDEVersion.Invalid,
-                UntilBuild = untilBuild ?? IDEVersion.Invalid
-            };
+            (
+                sinceBuild ?? IDEVersion.Invalid,
+                untilBuild ?? IDEVersion.Invalid
+            );
 
             // Get the file size and hash
             // TODO: refactor
@@ -174,7 +175,10 @@ namespace JetBrains.Plugins.Import.Extensions
                 dbPlugin,
                 @this.ChangeNotes,
                 size,
-                ParseDateFromMilliseconds(@this.UploadDate),
+                ParseDateFromMilliseconds
+                (
+                    @this.UpdateDate ?? @this.UploadDate ?? throw new InvalidOperationException()
+                ),
                 hash,
                 @this.Version,
                 versionRange,

@@ -35,7 +35,6 @@ namespace JetBrains.Plugins.Design
     public class DesignTimePluginsDatabaseContextFactory : IDesignTimeDbContextFactory<PluginsDatabaseContext>
     {
         /// <inheritdoc/>
-        [NotNull]
         public PluginsDatabaseContext CreateDbContext(string[] args)
         {
             var content = new ApplicationContentService();

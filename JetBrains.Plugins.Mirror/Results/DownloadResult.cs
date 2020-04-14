@@ -34,13 +34,11 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <summary>
         /// Gets the plugin that was downloaded.
         /// </summary>
-        [CanBeNull]
-        public IdeaPlugin Plugin { get; }
+        public IdeaPlugin? Plugin { get; }
 
         /// <summary>
         /// Gets the action that was performed by the operation.
         /// </summary>
-        [CanBeNull]
         public DownloadAction? Action { get; }
 
         /// <summary>
@@ -58,9 +56,9 @@ namespace JetBrains.Plugins.Mirror.Results
         [UsedImplicitly]
         private DownloadResult
         (
-            [CanBeNull] DownloadError? error,
-            [CanBeNull] string errorReason,
-            [CanBeNull] Exception exception = null
+            DownloadError? error,
+            string? errorReason,
+            Exception? exception = null
         )
             : base(error, errorReason, exception)
         {
@@ -69,10 +67,10 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <inheritdoc cref="ResultBase{TResultType,TErrorType}"/>
         private DownloadResult
         (
-            [CanBeNull] IdeaPlugin plugin,
-            [CanBeNull] DownloadError? error,
-            [CanBeNull] string errorReason,
-            [CanBeNull] Exception exception = null
+            IdeaPlugin? plugin,
+            DownloadError? error,
+            string? errorReason,
+            Exception? exception = null
         )
             : base(error, errorReason, exception)
         {
@@ -85,7 +83,6 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="plugin">The plugin that was successfully downloaded.</param>
         /// <param name="action">The action that was performed.</param>
         /// <returns>The result.</returns>
-        [NotNull]
         public static DownloadResult FromSuccess(IdeaPlugin plugin, DownloadAction action)
         {
             return new DownloadResult(plugin, action);
@@ -98,17 +95,14 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="result">The result to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        [NotNull]
-        public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] IResult<DownloadError> result)
+        public static DownloadResult FromError(IdeaPlugin plugin, IResult<DownloadError> result)
         {
             if (result.IsSuccess)
             {
                 throw new InvalidOperationException("The original result was successful.");
             }
 
-            // ReSharper disable once PossibleInvalidOperationException
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return FromError(plugin, result.Error.Value, result.ErrorReason);
+            return FromError(plugin, result.Error!.Value, result.ErrorReason);
         }
 
         /// <summary>
@@ -118,8 +112,7 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="exception">The exception to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        [NotNull]
-        public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] Exception exception)
+        public static DownloadResult FromError(IdeaPlugin plugin, Exception exception)
         {
             return FromError(plugin, DownloadError.Exception, exception.Message, exception);
         }
@@ -132,8 +125,7 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="reason">The reason for the exception.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        [NotNull]
-        public static DownloadResult FromError(IdeaPlugin plugin, [NotNull] Exception exception, [NotNull] string reason)
+        public static DownloadResult FromError(IdeaPlugin plugin, Exception exception, string reason)
         {
             return FromError(plugin, DownloadError.Exception, reason, exception);
         }
@@ -147,13 +139,12 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="exception">The exception that caused the failure, if any.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        [NotNull]
         public static DownloadResult FromError
         (
             IdeaPlugin plugin,
             DownloadError error,
-            [NotNull] string reason,
-            [CanBeNull] Exception exception = null
+            string? reason,
+            Exception? exception = null
         )
         {
             return new DownloadResult(plugin, error, reason, exception);

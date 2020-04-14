@@ -46,14 +46,12 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <summary>
         /// Holds the actual error reason.
         /// </summary>
-        [CanBeNull]
-        private readonly string _errorReason;
+        private readonly string? _errorReason;
 
         /// <inheritdoc />
         public TErrorType? Error { get; }
 
         /// <inheritdoc />
-        [NotNull]
         public string ErrorReason
         {
             get
@@ -73,7 +71,7 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <summary>
         /// Gets the exception that caused the error, if any.
         /// </summary>
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         static ResultBase()
         {
@@ -102,9 +100,9 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="exception">The exception that caused the error (if any).</param>
         protected ResultBase
         (
-            [CanBeNull] TErrorType? error,
-            [CanBeNull] string errorReason,
-            [CanBeNull] Exception exception = null
+            TErrorType? error,
+            string? errorReason,
+            Exception? exception = null
         )
         {
             _errorReason = errorReason;
@@ -119,16 +117,14 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="result">The result to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        public static TResultType FromError([NotNull] IResult<TErrorType> result)
+        public static TResultType FromError(IResult<TErrorType> result)
         {
             if (result.IsSuccess)
             {
                 throw new InvalidOperationException("The original result was successful.");
             }
 
-            // ReSharper disable once PossibleInvalidOperationException
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return FromError(result.Error.Value, result.ErrorReason);
+            return FromError(result.Error!.Value, result.ErrorReason);
         }
 
         /// <summary>
@@ -137,7 +133,7 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="exception">The exception to base this result off of.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        public static TResultType FromError([NotNull] Exception exception)
+        public static TResultType FromError(Exception exception)
         {
             return FromError(ExceptionErrorValue, exception.Message, exception);
         }
@@ -149,7 +145,7 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <param name="reason">The reason for the exception.</param>
         /// <returns>A failed result.</returns>
         [Pure]
-        public static TResultType FromError([NotNull] Exception exception, [NotNull] string reason)
+        public static TResultType FromError(Exception exception, string reason)
         {
             return FromError(ExceptionErrorValue, reason, exception);
         }
@@ -165,22 +161,28 @@ namespace JetBrains.Plugins.Mirror.Results
         public static TResultType FromError
         (
             TErrorType error,
-            [NotNull] string reason,
-            [CanBeNull] Exception exception = null
+            string? reason,
+            Exception? exception = null
         )
         {
-            return (TResultType)Activator.CreateInstance
+            var result = (TResultType?)Activator.CreateInstance
             (
                 typeof(TResultType),
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy,
                 null,
-                new object[] { error,  reason, exception },
+                new object?[] { error, reason, exception },
                 CultureInfo.InvariantCulture
             );
+
+            if (result is null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        [NotNull]
         public override string ToString()
         {
             return this.IsSuccess ? "Success" : $"{this.Error}: {this.ErrorReason}";

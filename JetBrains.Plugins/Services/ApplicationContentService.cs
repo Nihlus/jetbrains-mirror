@@ -34,7 +34,6 @@ namespace JetBrains.Plugins.Services
         /// <summary>
         /// Gets the database connection string.
         /// </summary>
-        [NotNull]
         public string ConnectionString { get; }
 
         /// <summary>
@@ -45,7 +44,6 @@ namespace JetBrains.Plugins.Services
             this.ConnectionString = LoadConnectionString();
         }
 
-        [NotNull]
         private string LoadConnectionString()
         {
             const string filename = "db.auth";

@@ -35,8 +35,7 @@ namespace JetBrains.Plugins.Import.Extensions
         /// </summary>
         /// <param name="this">The category.</param>
         /// <returns>The mapped category.</returns>
-        [NotNull]
-        public static Models.Vendor ToEntity([NotNull] this IdeaVendor @this)
+        public static Models.Vendor ToEntity(this IdeaVendor @this)
         {
             return new Models.Vendor
             {

@@ -37,14 +37,14 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the parent plugin.
         /// </summary>
-        [Required, NotNull]
-        public virtual Plugin Plugin { get; set; }
+        [Required]
+        public virtual Plugin Plugin { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the change notes for this release.
         /// </summary>
-        [Required, NotNull]
-        public string ChangeNotes { get; set; }
+        [Required]
+        public string ChangeNotes { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the number of times this release has been downloaded.
@@ -67,27 +67,27 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the MD5 hash of the file associated with this release.
         /// </summary>
-        [Required, NotNull]
-        public string Hash { get; set; }
+        [Required]
+        public string Hash { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the version of this release. This field, while typically semver, can follow a variety of
         /// loosely defined formats.
         /// </summary>
-        [Required, NotNull]
-        public string Version { get; set; }
+        [Required]
+        public string Version { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the range of IDE builds that this release is compatible with.
         /// </summary>
-        [Required, NotNull]
-        public virtual IDEVersionRange CompatibleWith { get; set; }
+        [Required]
+        public virtual IDEVersionRange CompatibleWith { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of plugin IDs that this plugin depends on.
         /// </summary>
         /// <remarks>This list can be empty.</remarks>
-        [Required, NotNull]
+        [Required]
         public virtual List<string> Dependencies { get; set; } = new List<string>();
 
         /// <summary>
@@ -112,14 +112,14 @@ namespace JetBrains.Plugins.Models
         /// <param name="dependencies">The dependencies of this release.</param>
         public PluginRelease
         (
-            [NotNull] Plugin plugin,
-            [NotNull] string changeNotes,
+            Plugin plugin,
+            string changeNotes,
             long size,
             DateTime uploadedAt,
-            [NotNull] string hash,
-            [NotNull] string version,
-            [NotNull] IDEVersionRange compatibleWith,
-            [CanBeNull] List<string> dependencies = null
+            string hash,
+            string version,
+            IDEVersionRange compatibleWith,
+            List<string>? dependencies = null
         )
         {
             dependencies = dependencies ?? new List<string>();

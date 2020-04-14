@@ -43,14 +43,14 @@ namespace JetBrains.Plugins.API
     [ApiController]
     public class Icon : ControllerBase
     {
-        [ProvidesContext, NotNull]
+        [ProvidesContext]
         private PluginsDatabaseContext _database;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Icon"/> class.
         /// </summary>
         /// <param name="database">The database.</param>
-        public Icon([NotNull] PluginsDatabaseContext database)
+        public Icon(PluginsDatabaseContext database)
         {
             _database = database;
         }
@@ -61,8 +61,7 @@ namespace JetBrains.Plugins.API
         /// <param name="pluginId">The ID of the plugin.</param>
         /// <param name="theme">The theme variant to request..</param>
         /// <returns>The plugins compatible with the given IDE version.</returns>
-        [NotNull]
-        public async Task<ActionResult<IEnumerable<string>>> Get([NotNull] string pluginId, [CanBeNull] string theme)
+        public async Task<ActionResult<IEnumerable<string>>> Get(string pluginId, string? theme)
         {
             var plugin = await _database.Plugins.FirstOrDefaultAsync(p => p.PluginID == pluginId);
 

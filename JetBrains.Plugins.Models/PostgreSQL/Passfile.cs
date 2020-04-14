@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace JetBrains.Plugins.Models.PostgreSQL
@@ -34,7 +35,7 @@ namespace JetBrains.Plugins.Models.PostgreSQL
         /// <summary>
         /// Gets the host that the database server is hosted on.
         /// </summary>
-        [NotNull]
+        [Annotations.NotNull]
         public string Host { get; }
 
         /// <summary>
@@ -45,25 +46,25 @@ namespace JetBrains.Plugins.Models.PostgreSQL
         /// <summary>
         /// Gets the name of the database to connect to.
         /// </summary>
-        [NotNull]
+        [Annotations.NotNull]
         public string Database { get; }
 
         /// <summary>
         /// Gets the username to connect with.
         /// </summary>
-        [NotNull]
+        [Annotations.NotNull]
         public string Username { get; }
 
         /// <summary>
         /// Gets the password to authenticate with.
         /// </summary>
-        [NotNull]
+        [Annotations.NotNull]
         public string Password { get; }
 
         /// <summary>
         /// Gets the connection string that the passfile represents.
         /// </summary>
-        [NotNull]
+        [Annotations.NotNull]
         public string ConnectionString { get; }
 
         /// <summary>
@@ -76,11 +77,11 @@ namespace JetBrains.Plugins.Models.PostgreSQL
         /// <param name="password">The login password.</param>
         public Passfile
         (
-            [NotNull] string host,
+            [Annotations.NotNull] string host,
             ushort port,
-            [NotNull] string database,
-            [NotNull] string username,
-            [NotNull] string password
+            [Annotations.NotNull] string database,
+            [Annotations.NotNull] string username,
+            [Annotations.NotNull] string password
         )
         {
             this.Host = host ?? throw new ArgumentNullException(nameof(host));
@@ -106,7 +107,7 @@ namespace JetBrains.Plugins.Models.PostgreSQL
         /// <param name="result">The resulting passfile.</param>
         /// <returns>true if the file was successfully parsed; otherwise, false.</returns>
         [Pure, ContractAnnotation("=> true, result : notnull; => false, result : null")]
-        public static bool TryParse([NotNull] string content, [CanBeNull] out Passfile result)
+        public static bool TryParse([Annotations.NotNull] string content, [NotNullWhen(true)] out Passfile? result)
         {
             content = content ?? throw new ArgumentNullException(nameof(content));
             result = null;

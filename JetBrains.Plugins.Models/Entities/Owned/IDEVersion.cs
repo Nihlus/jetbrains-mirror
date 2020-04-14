@@ -27,7 +27,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +85,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="branch">The branch number.</param>
         /// <param name="productID">The product ID.</param>
         /// <param name="build">The build number.</param>
-        public IDEVersion(int branch, string productID = null, int? build = null)
+        public IDEVersion(int branch, string? productID = null, int? build = null)
         {
             this.Branch = branch;
             this.ProductID = productID;
@@ -100,7 +99,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="result">The result.</param>
         /// <returns>true if the value was successfully parsed; otherwise, false.</returns>
         [Pure]
-        public static bool TryParse(string value, out IDEVersion result)
+        public static bool TryParse(string value, [NotNullWhen(true)] out IDEVersion? result)
         {
             int ParseBuildNumber(string buildComponent)
             {
@@ -119,18 +118,13 @@ namespace JetBrains.Plugins.Models
 
             result = null;
 
-            if (value == null)
-            {
-                return false;
-            }
-
             if (value == "n/a")
             {
                 result = Invalid;
                 return true;
             }
 
-            string productCode = null;
+            string? productCode = null;
             var branch = 0;
             int? build = null;
 
@@ -234,7 +228,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc />
-        public int CompareTo(IDEVersion other)
+        public int CompareTo(IDEVersion? other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -281,7 +275,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc/>
-        public int CompareTo([CanBeNull] object obj)
+        public int CompareTo(object? obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -353,7 +347,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="left">The first version.</param>
         /// <param name="right">The second version.</param>
         /// <returns>true if the operands are logically equivalent; otherwise, false.</returns>
-        public static bool operator ==([CanBeNull] IDEVersion left, [CanBeNull] IDEVersion right)
+        public static bool operator ==(IDEVersion? left, IDEVersion? right)
         {
             return Equals(left, right);
         }
@@ -365,7 +359,7 @@ namespace JetBrains.Plugins.Models
         /// <param name="left">The first version.</param>
         /// <param name="right">The second version.</param>
         /// <returns>true if the operands are not logically equivalent; otherwise, false.</returns>
-        public static bool operator !=([CanBeNull] IDEVersion left, [CanBeNull] IDEVersion right)
+        public static bool operator !=(IDEVersion? left, IDEVersion? right)
         {
             return !Equals(left, right);
         }

@@ -35,18 +35,18 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the plugins in the database.
         /// </summary>
-        public DbSet<Plugin> Plugins { get; set; }
+        public DbSet<Plugin> Plugins { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the categories in the database.
         /// </summary>
-        public DbSet<PluginCategory> Categories { get; set; }
+        public DbSet<PluginCategory> Categories { get; set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginsDatabaseContext"/> class.
         /// </summary>
         /// <param name="options">The options to use.</param>
-        public PluginsDatabaseContext([NotNull] DbContextOptions<PluginsDatabaseContext> options)
+        public PluginsDatabaseContext(DbContextOptions<PluginsDatabaseContext> options)
             : base(options)
         {
         }
@@ -58,16 +58,10 @@ namespace JetBrains.Plugins.Models
         /// <returns>The configured builder.</returns>
         public static DbContextOptionsBuilder ConfigureDefaultOptions
         (
-            [NotNull] DbContextOptionsBuilder builder
+            DbContextOptionsBuilder builder
         )
         {
             return builder.UseLazyLoadingProxies();
-        }
-
-        /// <inheritdoc />
-        protected override void OnModelCreating([NotNull] ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

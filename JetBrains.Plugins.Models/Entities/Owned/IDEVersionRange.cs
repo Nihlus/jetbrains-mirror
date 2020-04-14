@@ -36,21 +36,32 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the lower inclusive bound of the compatibility range.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         public virtual IDEVersion SinceBuild { get; set; }
 
         /// <summary>
         /// Gets or sets the upper exclusive bound of the compatibility range.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         public virtual IDEVersion UntilBuild { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IDEVersionRange"/> class.
+        /// </summary>
+        /// <param name="sinceBuild">The initial build.</param>
+        /// <param name="untilBuild">The final build.</param>
+        public IDEVersionRange(IDEVersion sinceBuild, IDEVersion untilBuild)
+        {
+            this.SinceBuild = sinceBuild;
+            this.UntilBuild = untilBuild;
+        }
 
         /// <summary>
         /// Determines whether the given version is within with the range.
         /// </summary>
         /// <param name="version">The version to test.</param>
         /// <returns>true if the version falls inside of the range; otherwise, false.</returns>
-        public bool IsInRange([NotNull] IDEVersion version)
+        public bool IsInRange(IDEVersion version)
         {
             if (!this.SinceBuild.IsValid && !this.UntilBuild.IsValid)
             {

@@ -39,19 +39,16 @@ namespace JetBrains.Plugins.Mirror.Results
         /// <summary>
         /// Gets the descriptive reason that the result failed.
         /// </summary>
-        [CanBeNull]
-        string ErrorReason { get; }
+        string? ErrorReason { get; }
 
         /// <summary>
         /// Gets the reason the result failed.
         /// </summary>
-        [CanBeNull]
         TErrorType? Error { get; }
 
         /// <summary>
         /// Gets the exception that caused the result to fail.
         /// </summary>
-        [CanBeNull]
-        Exception Exception { get; }
+        Exception? Exception { get; }
     }
 }

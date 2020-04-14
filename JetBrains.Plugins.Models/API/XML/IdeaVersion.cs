@@ -35,29 +35,25 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the minimum version the plugin is compatible with.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "min")]
-        public string Min { get; set; }
+        public string? Min { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum version the plugin is compatible with.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "max")]
-        public string Max { get; set; }
+        public string? Max { get; set; }
 
         /// <summary>
         /// Gets or sets the build the plugin is compatible from.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "since-build")]
-        public string SinceBuild { get; set; }
+        public string? SinceBuild { get; set; }
 
         /// <summary>
         /// Gets or sets the build the plugin stops being compatible with.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "until-build")]
-        public string UntilBuild { get; set; }
+        public string? UntilBuild { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace JetBrains.Plugins.Import
         /// <summary>
         /// Gets the command-line options that were passed to the program.
         /// </summary>
-        public static ProgramOptions Options { get; private set; }
+        public static ProgramOptions Options { get; private set; } = null!;
 
         private static async Task<int> Main(string[] args)
         {
@@ -116,7 +116,7 @@ namespace JetBrains.Plugins.Import
             return 0;
         }
 
-        private static async Task ImportRepositoryAsync([NotNull] IServiceProvider services, [NotNull] IdeaPluginRepository repository)
+        private static async Task ImportRepositoryAsync(IServiceProvider services, IdeaPluginRepository repository)
         {
             async Task ImportPluginReleaseScoped(IdeaPlugin pluginRelease)
             {
@@ -201,8 +201,8 @@ namespace JetBrains.Plugins.Import
 
         private static async Task<bool> ImportPluginReleaseAsync
         (
-            [NotNull] PluginsDatabaseContext db,
-            [NotNull] IdeaPlugin pluginRelease
+            PluginsDatabaseContext db,
+            IdeaPlugin pluginRelease
         )
         {
             var dbPlugin = await db.Plugins.FirstOrDefaultAsync(p => p.PluginID == pluginRelease.ID);
@@ -232,9 +232,9 @@ namespace JetBrains.Plugins.Import
 
         private static async Task<bool> ImportPluginAsync
         (
-            [NotNull] PluginsDatabaseContext db,
-            [NotNull] IdeaPlugin plugin,
-            [NotNull] IdeaPluginCategory category
+            PluginsDatabaseContext db,
+            IdeaPlugin plugin,
+            IdeaPluginCategory category
         )
         {
             var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);
@@ -268,8 +268,8 @@ namespace JetBrains.Plugins.Import
 
         private static async Task<bool> ImportCategoryAsync
         (
-            [NotNull] PluginsDatabaseContext db,
-            [NotNull] IdeaPluginCategory category
+            PluginsDatabaseContext db,
+            IdeaPluginCategory category
         )
         {
             var dbCategory = await db.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);

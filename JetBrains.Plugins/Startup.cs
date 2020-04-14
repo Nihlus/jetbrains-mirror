@@ -56,7 +56,7 @@ namespace JetBrains.Plugins
         /// Configures the services of the application.
         /// </summary>
         /// <param name="services">The service container.</param>
-        public void ConfigureServices([NotNull] IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var content = new ApplicationContentService();
 

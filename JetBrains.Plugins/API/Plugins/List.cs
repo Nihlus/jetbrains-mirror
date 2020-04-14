@@ -56,7 +56,6 @@ namespace JetBrains.Plugins.API.Plugins
         /// </summary>
         /// <param name="build">The build to list plugins for.</param>
         /// <returns>The plugins compatible with the given IDE version.</returns>
-        [NotNull]
         public ActionResult<IdeaPluginRepository> Get(string build)
         {
             if (!IDEVersion.TryParse(build, out var ideVersion))

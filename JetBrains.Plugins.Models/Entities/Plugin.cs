@@ -37,43 +37,43 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the name of the plugin.
         /// </summary>
-        [Required, NotNull]
-        public string Name { get; set; }
+        [Required]
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the category the plugin belongs to.
         /// </summary>
-        [Required, NotNull]
-        public virtual PluginCategory Category { get; set; }
+        [Required]
+        public virtual PluginCategory Category { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the unique plugin identifier.
         /// </summary>
-        [Required, NotNull]
-        public string PluginID { get; set; }
+        [Required]
+        public string PluginID { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the description of the plugin.
         /// </summary>
-        [Required, NotNull]
-        public string Description { get; set; }
+        [Required]
+        public string Description { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the plugin vendor.
         /// </summary>
-        [Required, NotNull]
-        public virtual Vendor Vendor { get; set; }
+        [Required]
+        public virtual Vendor Vendor { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of released versions of this plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         public virtual List<PluginRelease> Releases { get; set; } = new List<PluginRelease>();
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         public virtual List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the project URL of the plugin.
         /// </summary>
-        [Required, NotNull]
-        public string ProjectURL { get; set; }
+        [Required]
+        public string ProjectURL { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the last time the plugin was updated.
@@ -113,11 +113,11 @@ namespace JetBrains.Plugins.Models
         /// <param name="vendor">The plugin's vendor.</param>
         public Plugin
         (
-            [NotNull] string name,
-            [NotNull] PluginCategory category,
-            [NotNull] string pluginID,
-            [NotNull] string description,
-            [NotNull] Vendor vendor
+            string name,
+            PluginCategory category,
+            string pluginID,
+            string description,
+            Vendor vendor
         )
         {
             this.Name = name;

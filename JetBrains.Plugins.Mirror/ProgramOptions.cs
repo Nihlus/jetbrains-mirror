@@ -36,7 +36,6 @@ namespace JetBrains.Plugins.Mirror
         /// <summary>
         /// Gets the output folder where the repository should be created. Defaults to the working directory.
         /// </summary>
-        [NotNull]
         [Option
         (
             'o',
@@ -48,7 +47,6 @@ namespace JetBrains.Plugins.Mirror
         /// <summary>
         /// Gets the product versions to mirror plugins for.
         /// </summary>
-        [NotNull]
         [Option('b', "builds", Required = true, HelpText = "The product builds to mirror plugins for.")]
         public IEnumerable<string> ProductVersions { get; }
 
@@ -74,7 +72,6 @@ namespace JetBrains.Plugins.Mirror
         /// Gets a listing of usage examples.
         /// </summary>
         [Usage(ApplicationAlias = "JetBrains.Plugins.Mirror")]
-        [NotNull]
         public static List<Example> UsageExamples => new List<Example>
         {
             new Example
@@ -103,8 +100,8 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="verboseOutput">Whether to enable verbose output.</param>
         public ProgramOptions
         (
-            [CanBeNull] string outputFolder,
-            [CanBeNull] IEnumerable<string> productVersions,
+            string? outputFolder,
+            IEnumerable<string>? productVersions,
             bool mirrorAllVersions,
             bool verboseOutput
         )

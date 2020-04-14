@@ -43,7 +43,7 @@ namespace JetBrains.Plugins.Mirror
         /// <summary>
         /// Gets the command-line options that were passed to the program.
         /// </summary>
-        public static ProgramOptions Options { get; private set; }
+        public static ProgramOptions Options { get; private set; } = null!;
 
         private static async Task Main(string[] args)
         {

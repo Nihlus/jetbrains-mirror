@@ -58,7 +58,7 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="repository">The repository to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoryAsync([NotNull] IdeaPluginRepository repository, CancellationToken ct)
+        public async Task MirrorRepositoryAsync(IdeaPluginRepository repository, CancellationToken ct)
         {
             var totalSize = new ByteSize
             (
@@ -155,7 +155,7 @@ namespace JetBrains.Plugins.Mirror
                     mirroredRepository.Categories.Add(category);
                 }
 
-                category.Plugins.AddRange(downloadResults.Where(r => r.IsSuccess).Select(r => r.Plugin));
+                category.Plugins.AddRange(downloadResults.Where(r => r.IsSuccess).Select(r => r.Plugin!));
             }
 
             var repoPath = Path.Combine(baseDirectory, "repository.xml");
@@ -177,7 +177,7 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="productVersions">The product versions.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoriesAsync([NotNull] IEnumerable<string> productVersions, CancellationToken ct)
+        public async Task MirrorRepositoriesAsync(IEnumerable<string> productVersions, CancellationToken ct)
         {
             var repositories = new List<IdeaPluginRepository>();
             foreach (var productVersion in productVersions)
@@ -195,7 +195,7 @@ namespace JetBrains.Plugins.Mirror
         /// <param name="repositories">The repositories to mirror.</param>
         /// <param name="ct">The cancellation token in use.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task MirrorRepositoriesAsync([NotNull] IReadOnlyCollection<IdeaPluginRepository> repositories, CancellationToken ct)
+        public async Task MirrorRepositoriesAsync(IReadOnlyCollection<IdeaPluginRepository> repositories, CancellationToken ct)
         {
             await Console.Out.WriteLineAsync("Merging requested versioned repositories (this might take a while)...");
 
@@ -253,8 +253,8 @@ namespace JetBrains.Plugins.Mirror
         private async Task<DownloadResult> DownloadIconAsync
         (
             string targetDirectory,
-            [NotNull] IdeaPlugin plugin,
-            [CanBeNull] string theme,
+            IdeaPlugin plugin,
+            string? theme,
             CancellationToken ct
         )
         {
@@ -294,7 +294,7 @@ namespace JetBrains.Plugins.Mirror
                         return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                     }
 
-                    string filename = null;
+                    string? filename = null;
                     if (data.Content.Headers?.ContentDisposition?.FileName is null)
                     {
                         // Try an alternate way
@@ -376,7 +376,7 @@ namespace JetBrains.Plugins.Mirror
         private async Task<DownloadResult> DownloadPluginAsync
         (
             string targetDirectory,
-            [NotNull] IdeaPlugin plugin,
+            IdeaPlugin plugin,
             CancellationToken ct
         )
         {
@@ -418,7 +418,7 @@ namespace JetBrains.Plugins.Mirror
                         return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                     }
 
-                    string filename = null;
+                    string? filename = null;
                     if (data.Content.Headers?.ContentDisposition?.FileName is null)
                     {
                         // Try an alternate way
@@ -490,7 +490,7 @@ namespace JetBrains.Plugins.Mirror
         }
 
         [ItemNotNull]
-        private static async Task<DownloadResult> FinalizeDownload([NotNull] Task<DownloadResult> downloadTask)
+        private static async Task<DownloadResult> FinalizeDownload(Task<DownloadResult> downloadTask)
         {
             var result = await downloadTask;
             var plugin = result.Plugin;

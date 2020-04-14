@@ -61,7 +61,6 @@ namespace JetBrains.Plugins.API
         /// <param name="id">The ID of the plugin.</param>
         /// <param name="build">The build to list plugins for.</param>
         /// <returns>The plugins compatible with the given IDE version.</returns>
-        [NotNull]
         public async Task<ActionResult<IEnumerable<string>>> Get(string id, string build)
         {
             if (!IDEVersion.TryParse(build, out var ideVersion))

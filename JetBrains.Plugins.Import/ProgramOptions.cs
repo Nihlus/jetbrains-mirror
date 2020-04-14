@@ -36,7 +36,6 @@ namespace JetBrains.Plugins.Import
         /// <summary>
         /// Gets the input folder where the repository data resides. Defaults to the working directory.
         /// </summary>
-        [NotNull]
         [Option
         (
             'i',
@@ -48,7 +47,6 @@ namespace JetBrains.Plugins.Import
         /// <summary>
         /// Gets the path to the authentication file used for connecting to the database.
         /// </summary>
-        [NotNull]
         [Option
         (
             'k',
@@ -68,7 +66,6 @@ namespace JetBrains.Plugins.Import
         /// Gets a listing of usage examples.
         /// </summary>
         [Usage(ApplicationAlias = "JetBrains.Plugins.Mirror")]
-        [NotNull]
         public static List<Example> UsageExamples => new List<Example>
         {
             new Example
@@ -86,8 +83,8 @@ namespace JetBrains.Plugins.Import
         /// <param name="verboseOutput">Whether to enable verbose output.</param>
         public ProgramOptions
         (
-            [CanBeNull] string inputFolder,
-            [NotNull] string authenticationFile,
+            string? inputFolder,
+            string authenticationFile,
             bool verboseOutput
         )
         {

@@ -38,7 +38,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// Gets or sets the categories in the repository.
         /// </summary>
         [XmlElement(ElementName = "category")]
-        public List<IdeaPluginCategory> Categories { get; set; }
+        public List<IdeaPluginCategory> Categories { get; set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IdeaPluginRepository"/> class.

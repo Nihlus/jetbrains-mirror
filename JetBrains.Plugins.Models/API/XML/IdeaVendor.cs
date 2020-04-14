@@ -35,26 +35,22 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the vendor's URL.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "url")]
-        public string URL { get; set; }
+        public string? URL { get; set; }
 
         /// <summary>
         /// Gets or sets the vendor's main contact email.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the vendor's name.
         /// </summary>
-        [CanBeNull]
         [XmlText]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <inheritdoc />
-        [NotNull]
         public override string ToString()
         {
             return $"{this.URL} <{this.Email}>";

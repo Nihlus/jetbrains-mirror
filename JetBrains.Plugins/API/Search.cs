@@ -58,7 +58,6 @@ namespace JetBrains.Plugins.API
         /// <param name="max">The maximum number of results to return.</param>
         /// <param name="search">The search string.</param>
         /// <returns>The plugins compatible with the given IDE version.</returns>
-        [NotNull]
         public ActionResult<IEnumerable<string>> Get(string orderBy, string build, int max, string search)
         {
             if (!IDEVersion.TryParse(build, out var ideVersion))
@@ -69,8 +68,7 @@ namespace JetBrains.Plugins.API
             return new ActionResult<IEnumerable<string>>(GetResults(ideVersion, max, orderBy, search));
         }
 
-        [NotNull]
-        private IEnumerable<string> GetResults(IDEVersion version, int max, string orderBy, [CanBeNull] string search)
+        private IEnumerable<string> GetResults(IDEVersion version, int max, string orderBy, string? search)
         {
             var compatibleIDs = new List<string>();
 

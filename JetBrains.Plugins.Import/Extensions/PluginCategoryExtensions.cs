@@ -35,8 +35,7 @@ namespace JetBrains.Plugins.Import.Extensions
         /// </summary>
         /// <param name="this">The category.</param>
         /// <returns>The mapped category.</returns>
-        [NotNull]
-        public static Models.PluginCategory ToEntity([NotNull] this IdeaPluginCategory @this)
+        public static Models.PluginCategory ToEntity(this IdeaPluginCategory @this)
         {
             return new Models.PluginCategory(@this.Name);
         }

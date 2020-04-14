@@ -38,8 +38,7 @@ namespace JetBrains.Plugins.Mirror.Helpers
         /// </summary>
         /// <param name="phrase">The phrase.</param>
         /// <returns>The generated slug.</returns>
-        [NotNull]
-        public static string GenerateSlug([NotNull] this string phrase)
+        public static string GenerateSlug(this string phrase)
         {
             var str = phrase.RemoveDiacritics().ToLower();
 
@@ -61,7 +60,7 @@ namespace JetBrains.Plugins.Mirror.Helpers
         /// </summary>
         /// <param name="value">The string.</param>
         /// <returns>The string, with diacritics removed.</returns>
-        private static string RemoveDiacritics([NotNull] this string value)
+        private static string RemoveDiacritics(this string value)
         {
             var normalizedString = value.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();

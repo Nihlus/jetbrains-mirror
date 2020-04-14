@@ -40,13 +40,13 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         [Required]
         [XmlAttribute(AttributeName = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the list of plugins in the category.
         /// </summary>
         [XmlElement(ElementName = "idea-plugin")]
-        public List<IdeaPlugin> Plugins { get; set; }
+        public List<IdeaPlugin> Plugins { get; set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IdeaPluginCategory"/> class.
