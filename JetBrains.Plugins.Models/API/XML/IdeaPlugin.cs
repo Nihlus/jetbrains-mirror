@@ -1,7 +1,10 @@
 //
 //  IdeaPlugin.cs
 //
-//  Copyright (c) 2019 Firwood Software
+//  Author:
+//       Jarl Gullberg <jarl.gullberg@gmail.com>
+//
+//  Copyright (c) 2019 Jarl Gullberg
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as published by
@@ -35,65 +38,63 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the name of the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the ID of the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "id")]
         public string ID { get; set; }
 
         /// <summary>
         /// Gets or sets the description of the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the latest version of the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "version")]
         public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets the vendor that develops the plugin.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "vendor")]
         public IdeaVendor Vendor { get; set; }
 
         /// <summary>
         /// Gets or sets the IDEA versions that the plugin supports.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "idea-version")]
         public IdeaVersion IdeaVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the latest change notes.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlElement(ElementName = "change-notes")]
         public string ChangeNotes { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugins this plugin depends on.
         /// </summary>
-        [CanBeNull]
         [XmlElement(ElementName = "depends")]
-        public List<string> Depends { get; set; } = new List<string>();
+        public List<string>? Depends { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the tags applied to the plugin.
         /// </summary>
-        [CanBeNull]
         [XmlElement(ElementName = "tags")]
-        public string Tags { get; set; }
+        public string? Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the rating of the plugin.
@@ -117,23 +118,20 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the project URL of the plugin.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "url")]
-        public string ProjectURL { get; set; }
+        public string? ProjectURL { get; set; }
 
         /// <summary>
         /// Gets or sets the upload date of the plugin release.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "date")]
-        public string UploadDate { get; set; }
+        public string? UploadDate { get; set; }
 
         /// <summary>
         /// Gets or sets the latest update date of the plugin.
         /// </summary>
-        [CanBeNull]
         [XmlAttribute(AttributeName = "updatedDate")]
-        public string UpdateDate { get; set; }
+        public string? UpdateDate { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IdeaPlugin"/> class.
@@ -156,13 +154,13 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <param name="changeNotes">The changelog for this release.</param>
         public IdeaPlugin
         (
-            [NotNull] string name,
-            [NotNull] string id,
-            [NotNull] string description,
-            [NotNull] string version,
-            [NotNull] IdeaVendor vendor,
-            [NotNull] IdeaVersion ideaVersion,
-            [NotNull] string changeNotes
+            string name,
+            string id,
+            string description,
+            string version,
+            IdeaVendor vendor,
+            IdeaVersion ideaVersion,
+            string changeNotes
         )
         {
             this.Name = name;
@@ -200,13 +198,12 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         /// <param name="other">The other plugin.</param>
         /// <returns>true if the plugins are logically equivalent; otherwise, false.</returns>
-        public bool IsSameAs([NotNull] IdeaPlugin other)
+        public bool IsSameAs(IdeaPlugin other)
         {
             return GetIdentityHash() == other.GetIdentityHash();
         }
 
         /// <inheritdoc />
-        [NotNull]
         public override string ToString()
         {
             return this.Name;

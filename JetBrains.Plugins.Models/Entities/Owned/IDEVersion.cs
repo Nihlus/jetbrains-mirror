@@ -1,7 +1,10 @@
 //
 //  IDEVersion.cs
 //
-//  Copyright (c) 2019 Firwood Software
+//  Author:
+//       Jarl Gullberg <jarl.gullberg@gmail.com>
+//
+//  Copyright (c) 2019 Jarl Gullberg
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as published by
@@ -45,8 +48,7 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the product ID of this version.
         /// </summary>
-        [CanBeNull]
-        public string ProductID { get; set; }
+        public string? ProductID { get; set; }
 
         /// <summary>
         /// Gets or sets the branch number.
@@ -57,14 +59,12 @@ namespace JetBrains.Plugins.Models
         /// <summary>
         /// Gets or sets the branch build number.
         /// </summary>
-        [CanBeNull]
         public int? Build { get; set; }
 
         /// <summary>
         /// Gets or sets additional, more granular version numbers. These are appended in order after the main version
         /// structure, separated by dots.
         /// </summary>
-        [NotNull]
         public virtual List<int> Extra { get; set; } = new List<int>();
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc/>
-        public bool Equals([CanBeNull] IDEVersion other)
+        public bool Equals(IDEVersion? other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -199,7 +199,7 @@ namespace JetBrains.Plugins.Models
         }
 
         /// <inheritdoc/>
-        public override bool Equals([CanBeNull] object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj))
             {

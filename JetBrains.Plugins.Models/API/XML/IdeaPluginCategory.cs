@@ -1,7 +1,10 @@
 //
 //  IdeaPluginCategory.cs
 //
-//  Copyright (c) 2019 Firwood Software
+//  Author:
+//       Jarl Gullberg <jarl.gullberg@gmail.com>
+//
+//  Copyright (c) 2019 Jarl Gullberg
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as published by
@@ -35,14 +38,13 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the name of the category.
         /// </summary>
-        [Required, NotNull]
+        [Required]
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the list of plugins in the category.
         /// </summary>
-        [NotNull]
         [XmlElement(ElementName = "idea-plugin")]
         public List<IdeaPlugin> Plugins { get; set; }
 
@@ -60,16 +62,15 @@ namespace JetBrains.Plugins.Models.API.XML
         /// </summary>
         /// <param name="name">The name of the category.</param>
         /// <param name="plugins">The plugins in the category.</param>
-        public IdeaPluginCategory([NotNull] string name, [CanBeNull] List<IdeaPlugin> plugins = null)
+        public IdeaPluginCategory(string name, List<IdeaPlugin>? plugins = null)
         {
-            plugins = plugins ?? new List<IdeaPlugin>();
+            plugins ??= new List<IdeaPlugin>();
 
             this.Name = name;
             this.Plugins = plugins;
         }
 
         /// <inheritdoc />
-        [NotNull]
         public override string ToString()
         {
             return $"{this.Name} ({this.Plugins.Count} plugins)";

@@ -1,7 +1,10 @@
 //
 //  IdeaPluginRepository.cs
 //
-//  Copyright (c) 2019 Firwood Software
+//  Author:
+//       Jarl Gullberg <jarl.gullberg@gmail.com>
+//
+//  Copyright (c) 2019 Jarl Gullberg
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +37,6 @@ namespace JetBrains.Plugins.Models.API.XML
         /// <summary>
         /// Gets or sets the categories in the repository.
         /// </summary>
-        [NotNull]
         [XmlElement(ElementName = "category")]
         public List<IdeaPluginCategory> Categories { get; set; }
 
@@ -51,7 +53,7 @@ namespace JetBrains.Plugins.Models.API.XML
         /// Initializes a new instance of the <see cref="IdeaPluginRepository"/> class.
         /// </summary>
         /// <param name="categories">The categories in the repository.</param>
-        public IdeaPluginRepository([CanBeNull] List<IdeaPluginCategory> categories = null)
+        public IdeaPluginRepository(List<IdeaPluginCategory>? categories = null)
         {
             this.Categories = categories ?? new List<IdeaPluginCategory>();
         }
