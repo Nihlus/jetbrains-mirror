@@ -74,16 +74,13 @@ namespace JetBrains.Plugins.Mirror.API
             var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.PluginList.BasePath,
-                Query = query.ToString()
+                Query = query.ToString() ?? string.Empty
             };
 
-            using (var response = await _httpClient.GetAsync(uriBuilder.Uri, ct))
-            {
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                {
-                    return (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
-                }
-            }
+            using var response = await _httpClient.GetAsync(uriBuilder.Uri, ct);
+            await using var stream = await response.Content.ReadAsStreamAsync();
+
+            return (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
         }
 
         /// <summary>
@@ -101,17 +98,14 @@ namespace JetBrains.Plugins.Mirror.API
             var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.PluginList.BasePath,
-                Query = query.ToString()
+                Query = query.ToString() ?? string.Empty
             };
 
-            using (var response = await _httpClient.GetAsync(uriBuilder.Uri, ct))
-            {
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                {
-                    var repository = (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
-                    return repository.Categories.SelectMany(c => c.Plugins).ToList();
-                }
-            }
+            using var response = await _httpClient.GetAsync(uriBuilder.Uri, ct);
+            await using var stream = await response.Content.ReadAsStreamAsync();
+            var repository = (IdeaPluginRepository)RepositorySerializer.Deserialize(stream);
+
+            return repository.Categories.SelectMany(c => c.Plugins).ToList();
         }
 
         /// <summary>
@@ -140,14 +134,16 @@ namespace JetBrains.Plugins.Mirror.API
             var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.API.Icon.BasePath,
-                Query = query.ToString()
+                Query = query.ToString() ?? string.Empty
             };
 
             // Resolve moved requests.
             var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
             while (!data.IsSuccessStatusCode && (data.StatusCode == HttpStatusCode.MovedPermanently || data.StatusCode == HttpStatusCode.Found))
             {
-                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+                var newData = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+                data.Dispose();
+                data = newData;
             }
 
             return data;
@@ -180,14 +176,17 @@ namespace JetBrains.Plugins.Mirror.API
             var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.PluginManager.BasePath,
-                Query = query.ToString()
+                Query = query.ToString() ?? string.Empty
             };
 
             // Resolve moved requests.
             var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
             while (!data.IsSuccessStatusCode && data.StatusCode == HttpStatusCode.MovedPermanently)
             {
-                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+                var newData = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+
+                data.Dispose();
+                data = newData;
             }
 
             return data;
@@ -210,14 +209,17 @@ namespace JetBrains.Plugins.Mirror.API
             var uriBuilder = new UriBuilder("https", _baseURL)
             {
                 Path = Endpoints.PluginDownload.BasePath,
-                Query = query.ToString()
+                Query = query.ToString() ?? string.Empty
             };
 
             // Resolve moved requests.
             var data = await _httpClient.GetAsync(uriBuilder.Uri, HttpCompletionOption.ResponseHeadersRead, ct);
             while (!data.IsSuccessStatusCode && data.StatusCode == HttpStatusCode.MovedPermanently)
             {
-                data = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+                var newData = await _httpClient.GetAsync(data.Headers.Location, HttpCompletionOption.ResponseHeadersRead, ct);
+
+                data.Dispose();
+                data = newData;
             }
 
             return data;

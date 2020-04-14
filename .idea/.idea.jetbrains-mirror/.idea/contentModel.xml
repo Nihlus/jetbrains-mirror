@@ -50,7 +50,6 @@
           <e p="Debug" t="Include">
             <e p="netcoreapp3.1" t="Include">
               <e p="JetBrains.Plugins.AssemblyInfo.cs" t="Include" />
-              <e p="JetBrains.Plugins.RazorAssemblyInfo.cs" t="Include" />
             </e>
           </e>
         </e>

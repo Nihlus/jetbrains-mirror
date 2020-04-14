@@ -35,22 +35,20 @@ namespace JetBrains.Plugins.Mirror
         /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            using (var cancellationSource = new CancellationTokenSource())
+            using var cancellationSource = new CancellationTokenSource();
+            var timeout = Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+            var actualRequest = base.SendAsync(request, cancellationSource.Token);
+
+            await Task.WhenAny(timeout, actualRequest);
+            if (timeout.IsCompleted)
             {
-                var timeout = Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-                var actualRequest = base.SendAsync(request, cancellationSource.Token);
+                cancellationSource.Cancel();
 
-                await Task.WhenAny(timeout, actualRequest);
-                if (timeout.IsCompleted)
-                {
-                    cancellationSource.Cancel();
-
-                    await timeout;
-                    throw new TimeoutException();
-                }
-
-                return await actualRequest;
+                await timeout;
+                throw new TimeoutException();
             }
+
+            return await actualRequest;
         }
     }
 }

@@ -95,12 +95,12 @@ namespace JetBrains.Plugins.Import
             var deserializer = new XmlSerializer(typeof(IdeaPluginRepository));
 
             IdeaPluginRepository repository;
-            using (var repoFile = File.OpenRead(repoFilePath))
+            await using (var repoFile = File.OpenRead(repoFilePath))
             {
                 repository = (IdeaPluginRepository)deserializer.Deserialize(repoFile);
             }
 
-            using (var services = new ServiceCollection()
+            await using (var services = new ServiceCollection()
                 .AddDbContextPool<PluginsDatabaseContext>
                 (
                     options => PluginsDatabaseContext
@@ -119,40 +119,34 @@ namespace JetBrains.Plugins.Import
         {
             async Task ImportPluginReleaseScoped(IdeaPlugin pluginRelease)
             {
-                using (var scope = services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
+                using var scope = services.CreateScope();
+                await using var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
 
-                    if (await ImportPluginReleaseAsync(db, pluginRelease))
-                    {
-                        await db.SaveChangesAsync();
-                    }
+                if (await ImportPluginReleaseAsync(db, pluginRelease))
+                {
+                    await db.SaveChangesAsync();
                 }
             }
 
             async Task ImportPluginScopedAsync(IdeaPlugin pluginDefinition, IdeaPluginCategory category)
             {
-                using (var scope = services.CreateScope())
+                using var scope = services.CreateScope();
+                await using var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
+                if (await ImportPluginAsync(db, pluginDefinition, category))
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
-                    if (await ImportPluginAsync(db, pluginDefinition, category))
-                    {
-                        await db.SaveChangesAsync();
-                    }
+                    await db.SaveChangesAsync();
                 }
             }
 
             async Task ImportCategoryScopedAsync(IdeaPluginCategory category)
             {
-                using (var scope = services.CreateScope())
-                {
-                    await Console.Out.WriteLineAsync($"Importing category \"{category.Name}\"...");
+                using var scope = services.CreateScope();
+                await Console.Out.WriteLineAsync($"Importing category \"{category.Name}\"...");
 
-                    var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
-                    if (await ImportCategoryAsync(db, category))
-                    {
-                        await db.SaveChangesAsync();
-                    }
+                await using var db = scope.ServiceProvider.GetRequiredService<PluginsDatabaseContext>();
+                if (await ImportCategoryAsync(db, category))
+                {
+                    await db.SaveChangesAsync();
                 }
             }
 

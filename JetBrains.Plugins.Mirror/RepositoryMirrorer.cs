@@ -165,10 +165,8 @@ namespace JetBrains.Plugins.Mirror
             }
 
             var serializer = new XmlSerializer(typeof(IdeaPluginRepository));
-            using (var output = File.OpenWrite(repoPath))
-            {
-                serializer.Serialize(output, mirroredRepository);
-            }
+            await using var output = File.OpenWrite(repoPath);
+            serializer.Serialize(output, mirroredRepository);
         }
 
         /// <summary>
@@ -287,73 +285,69 @@ namespace JetBrains.Plugins.Mirror
 
             try
             {
-                using (var data = await _api.DownloadIconAsync(plugin, theme, ct))
+                using var data = await _api.DownloadIconAsync(plugin, theme, ct);
+                if (!data.IsSuccessStatusCode)
                 {
-                    if (!data.IsSuccessStatusCode)
-                    {
-                        return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
-                    }
-
-                    string? filename = null;
-                    if (data.Content.Headers?.ContentDisposition?.FileName is null)
-                    {
-                        // Try an alternate way
-                        var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
-                        if (!(alternatePath is null))
-                        {
-                            if (Path.HasExtension(alternatePath))
-                            {
-                                filename = Path.GetFileName(alternatePath);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        filename = data.Content.Headers.ContentDisposition.FileName;
-                    }
-
-                    if (filename is null)
-                    {
-                        return DownloadResult.FromError
-                        (
-                            plugin,
-                            DownloadError.Unknown,
-                            "Failed to retrieve file information from the download headers."
-                        );
-                    }
-
-                    Directory.CreateDirectory(saveDirectory);
-
-                    var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
-
-                    if (File.Exists(savePath))
-                    {
-                        var expectedSize = data.Content.Headers?.ContentLength;
-                        if (new FileInfo(savePath).Length == expectedSize)
-                        {
-                            // Looks like we already have this one
-                            return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
-                        }
-
-                        // It's crap, so delete it and download again
-                        File.Delete(savePath);
-                    }
-
-                    // Download to a temporary file first
-                    var tempFile = Path.GetTempFileName();
-                    using (var tempOutput = File.Create(tempFile))
-                    {
-                        using (var contentStream = await data.Content.ReadAsStreamAsync())
-                        {
-                            await contentStream.CopyToAsync(tempOutput, ct);
-                        }
-                    }
-
-                    // And then move it over to the final save location
-                    File.Move(tempFile, savePath);
-
-                    return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
+                    return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                 }
+
+                string? filename = null;
+                if (data.Content.Headers?.ContentDisposition?.FileName is null)
+                {
+                    // Try an alternate way
+                    var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
+                    if (!(alternatePath is null))
+                    {
+                        if (Path.HasExtension(alternatePath))
+                        {
+                            filename = Path.GetFileName(alternatePath);
+                        }
+                    }
+                }
+                else
+                {
+                    filename = data.Content.Headers.ContentDisposition.FileName;
+                }
+
+                if (filename is null)
+                {
+                    return DownloadResult.FromError
+                    (
+                        plugin,
+                        DownloadError.Unknown,
+                        "Failed to retrieve file information from the download headers."
+                    );
+                }
+
+                Directory.CreateDirectory(saveDirectory);
+
+                var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
+
+                if (File.Exists(savePath))
+                {
+                    var expectedSize = data.Content.Headers?.ContentLength;
+                    if (new FileInfo(savePath).Length == expectedSize)
+                    {
+                        // Looks like we already have this one
+                        return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
+                    }
+
+                    // It's crap, so delete it and download again
+                    File.Delete(savePath);
+                }
+
+                // Download to a temporary file first
+                var tempFile = Path.GetTempFileName();
+                await using (var tempOutput = File.Create(tempFile))
+                {
+                    await using var contentStream = await data.Content.ReadAsStreamAsync();
+                    await contentStream.CopyToAsync(tempOutput, ct);
+                }
+
+                // And then move it over to the final save location
+                File.Move(tempFile, savePath);
+
+                return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
             }
             catch (TimeoutException tex)
             {
@@ -411,73 +405,69 @@ namespace JetBrains.Plugins.Mirror
 
             try
             {
-                using (var data = await _api.DownloadAsync(plugin, ct))
+                using var data = await _api.DownloadAsync(plugin, ct);
+                if (!data.IsSuccessStatusCode)
                 {
-                    if (!data.IsSuccessStatusCode)
-                    {
-                        return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
-                    }
-
-                    string? filename = null;
-                    if (data.Content.Headers?.ContentDisposition?.FileName is null)
-                    {
-                        // Try an alternate way
-                        var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
-                        if (!(alternatePath is null))
-                        {
-                            if (Path.HasExtension(alternatePath))
-                            {
-                                filename = Path.GetFileName(alternatePath);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        filename = data.Content.Headers.ContentDisposition.FileName;
-                    }
-
-                    if (filename is null)
-                    {
-                        return DownloadResult.FromError
-                        (
-                            plugin,
-                            DownloadError.Unknown,
-                            "Failed to retrieve file information from the download headers."
-                        );
-                    }
-
-                    Directory.CreateDirectory(saveDirectory);
-
-                    var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
-
-                    if (File.Exists(savePath))
-                    {
-                        var expectedSize = data.Content.Headers?.ContentLength ?? plugin.Size;
-                        if (new FileInfo(savePath).Length == expectedSize)
-                        {
-                            // Looks like we already have this one
-                            return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
-                        }
-
-                        // It's crap, so delete it and download again
-                        File.Delete(savePath);
-                    }
-
-                    // Download to a temporary file first
-                    var tempFile = Path.GetTempFileName();
-                    using (var tempOutput = File.Create(tempFile))
-                    {
-                        using (var contentStream = await data.Content.ReadAsStreamAsync())
-                        {
-                            await contentStream.CopyToAsync(tempOutput, ct);
-                        }
-                    }
-
-                    // And then move it over to the final save location
-                    File.Move(tempFile, savePath);
-
-                    return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
+                    return DownloadResult.FromError(plugin, DownloadError.Unknown, data.ReasonPhrase);
                 }
+
+                string? filename = null;
+                if (data.Content.Headers?.ContentDisposition?.FileName is null)
+                {
+                    // Try an alternate way
+                    var alternatePath = data.RequestMessage?.RequestUri?.AbsolutePath;
+                    if (!(alternatePath is null))
+                    {
+                        if (Path.HasExtension(alternatePath))
+                        {
+                            filename = Path.GetFileName(alternatePath);
+                        }
+                    }
+                }
+                else
+                {
+                    filename = data.Content.Headers.ContentDisposition.FileName;
+                }
+
+                if (filename is null)
+                {
+                    return DownloadResult.FromError
+                    (
+                        plugin,
+                        DownloadError.Unknown,
+                        "Failed to retrieve file information from the download headers."
+                    );
+                }
+
+                Directory.CreateDirectory(saveDirectory);
+
+                var savePath = Path.Combine(saveDirectory, filename.Replace("\"", string.Empty));
+
+                if (File.Exists(savePath))
+                {
+                    var expectedSize = data.Content.Headers?.ContentLength ?? plugin.Size;
+                    if (new FileInfo(savePath).Length == expectedSize)
+                    {
+                        // Looks like we already have this one
+                        return DownloadResult.FromSuccess(plugin, DownloadAction.Skipped);
+                    }
+
+                    // It's crap, so delete it and download again
+                    File.Delete(savePath);
+                }
+
+                // Download to a temporary file first
+                var tempFile = Path.GetTempFileName();
+                await using (var tempOutput = File.Create(tempFile))
+                {
+                    await using var contentStream = await data.Content.ReadAsStreamAsync();
+                    await contentStream.CopyToAsync(tempOutput, ct);
+                }
+
+                // And then move it over to the final save location
+                File.Move(tempFile, savePath);
+
+                return DownloadResult.FromSuccess(plugin, DownloadAction.Downloaded);
             }
             catch (TimeoutException tex)
             {

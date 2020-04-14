@@ -159,11 +159,9 @@ namespace JetBrains.Plugins.Import.Extensions
             string hash;
             using (var md5 = MD5.Create())
             {
-                using (var file = File.OpenRead(pluginFile))
-                {
-                    var md5Sum = md5.ComputeHash(file);
-                    hash = BitConverter.ToString(md5Sum).Replace("-", string.Empty).ToLowerInvariant();
-                }
+                using var file = File.OpenRead(pluginFile);
+                var md5Sum = md5.ComputeHash(file);
+                hash = BitConverter.ToString(md5Sum).Replace("-", string.Empty).ToLowerInvariant();
             }
 
             var fileInfo = new FileInfo(pluginFile);

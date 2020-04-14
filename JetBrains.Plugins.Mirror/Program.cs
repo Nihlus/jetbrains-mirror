@@ -70,7 +70,7 @@ namespace JetBrains.Plugins.Mirror
                                     TimeSpan.FromMilliseconds(jitterer.Next(0, 100))
                 );
 
-            using (var services = new ServiceCollection()
+            await using var services = new ServiceCollection()
                 .AddHttpClient<JetbrainsPlugins, JetbrainsPlugins>()
                 .ConfigurePrimaryHttpMessageHandler
                 (
@@ -109,15 +109,11 @@ namespace JetBrains.Plugins.Mirror
                 .AddPolicyHandler(retryPolicy)
                 .Services
                 .AddSingleton<RepositoryMirrorer>()
-                .BuildServiceProvider())
-            {
-                var mirrorer = services.GetRequiredService<RepositoryMirrorer>();
-                using (var cancellationSource = new CancellationTokenSource())
-                {
-                    await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {Options.ProductVersions.Humanize()}...");
-                    await mirrorer.MirrorRepositoriesAsync(Options.ProductVersions, cancellationSource.Token);
-                }
-            }
+                .BuildServiceProvider();
+            var mirrorer = services.GetRequiredService<RepositoryMirrorer>();
+            using var cancellationSource = new CancellationTokenSource();
+            await Console.Out.WriteLineAsync($"Fetching latest plugin versions for {Options.ProductVersions.Humanize()}...");
+            await mirrorer.MirrorRepositoriesAsync(Options.ProductVersions, cancellationSource.Token);
         }
     }
 }
